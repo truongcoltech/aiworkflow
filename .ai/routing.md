@@ -13,19 +13,18 @@ Human: "Setup AI workflow"
 
   EXISTING PROJECT:
     → repo-scan workflow
-    → Pre-flight conflict check (see below)
-    → Human confirms → merge/replace per strategy
-    → SKILLS-TODO.md auto-filled from scan
+    → Pre-flight conflict check → human confirms
+    → Merge/replace per strategy → SKILLS-TODO filled from scan
     → Begin work
 ```
 
-## Everyday flow (after setup)
+## Everyday flow
 
 ```
 Human writes requirement
   → Claude generates task files + execution plan
   → Human pastes Codex group → Codex panel
-  → Human pastes Cline group → Cline terminal
+  → Human pastes Cline group → Cline terminal (if needed)
   → Human reviews diff → batch commit → push
 ```
 
@@ -41,8 +40,8 @@ Human writes requirement
 ## Executor — human decides at paste time
 
 Codex = all code edits, any size.
-Cline = shell required (migration, seed, build loop) OR Codex quota exhausted.
-Execution plan groups tasks by dependency and executor. Codex first, Cline last.
+Cline = shell required OR Codex quota exhausted.
+Execution plan groups by dependency and executor. Codex first, Cline last.
 
 ## Human gates
 
@@ -56,15 +55,15 @@ Execution plan groups tasks by dependency and executor. Codex first, Cline last.
 
 | File/folder | On adopt |
 |---|---|
-| `workflows/*.md` | **Replace** — standard files, no project content |
-| `routing.md` | **Replace** — update doc paths section only |
-| `AGENTS.md` | **Merge** — keep project constraints, replace standard sections |
-| `skills/*.md` | **Append only** — never overwrite existing content |
-| `SKILLS-TODO.md` | **Generate fresh** — repo-scan fills it |
-| `tasks/**` | **Never touch** |
-| `memory/**` | **Never touch** |
-| `docs/**` | **Never touch** |
-| `module-map.md` | **Never touch** |
+| `AGENTS.md` | Merge — keep project constraints |
+| `.ai/workflows/*.md` | Replace |
+| `.ai/routing.md` | Replace |
+| `.ai/SKILLS-TODO.md` | Generate fresh |
+| `.ai/skills/*.md` | Append only |
+| `.ai/tasks/**` | Never touch |
+| `.ai/memory/**` | Never touch |
+| `docs/**` | Never touch |
+| `.ai/module-map.md` | Never touch |
 
 ## Optional scripts
 
@@ -75,7 +74,7 @@ pnpm lint-workflows   # workflow drift check
 ```
 
 ## Doc paths
-<!-- Update these to match your project after setup -->
+<!-- Update to match your project after setup -->
 | What | Path |
 |---|---|
 | Module registry | `docs/CUTOFF.md` |
