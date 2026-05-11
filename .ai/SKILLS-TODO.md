@@ -11,19 +11,25 @@ Auto-filled by repo-scan. Updated by Claude during work when new info is discove
 
 ## Stack
 
-| Role | Status | Value |
-|---|---|---|
-| Primary language | ❓ | — |
-| Runtime / framework | ❓ | — |
-| Frontend framework | ❓ | — |
-| CSS approach | ❓ | — |
-| Database | ❓ | — |
-| ORM / query builder | ❓ | — |
-| Package manager | ❓ | — |
-| Build tool | ❓ | — |
-| Test framework | ❓ | — |
-| Auth pattern | ❓ | — |
-| Deployment target | ❓ | — |
+Stability levels:
+- `core` — stable for the life of the repo. Fill once from repo-scan. Never re-detect.
+- `module` — stable per module. Fill when first touching that module.
+
+| Role | Stability | Status | Value |
+|---|---|---|---|
+| Primary language | core | ❓ | — |
+| Runtime / framework | core | ❓ | — |
+| Package manager | core | ❓ | — |
+| Build tool | core | ❓ | — |
+| Test framework | core | ❓ | — |
+| Frontend framework | core | ❓ | — |
+| CSS approach | core | ❓ | — |
+| Database | core | ❓ | — |
+| ORM / query builder | module | ❓ | — |
+| Auth pattern | module | ❓ | — |
+| Deployment target | module | ❓ | — |
+
+**Rule:** If all rows needed for a task are `core` ✅, skip loading SKILLS-TODO.md for that task entirely.
 
 ---
 
