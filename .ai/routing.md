@@ -22,10 +22,22 @@ Human: "Setup AI workflow"
 
 ```
 Human writes requirement
-  → Claude generates task files + execution plan
-  → Human pastes Codex group → Codex panel
-  → Human pastes Cline group → Cline terminal (if needed)
-  → Human reviews diff → batch commit → push
+  → Claude triages (TRIVIAL / SIMPLE / STANDARD / EPIC)
+
+  TRIVIAL:
+    → Direct fix (no task file)
+    → Human reviews diff → commit → push
+
+  SIMPLE:
+    → Task note (TASK + DONE WHEN only)
+    → Human pastes → Codex
+    → Human reviews diff → commit → push
+
+  STANDARD / EPIC:
+    → Claude generates task files + execution plan
+    → Human pastes Codex group → Codex panel
+    → Human pastes Cline group → Cline terminal (if needed)
+    → Human reviews diff → batch commit → push
 ```
 
 ## Roles

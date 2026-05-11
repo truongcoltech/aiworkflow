@@ -9,16 +9,37 @@ Docs and comments: English only.
 
 ---
 
-## Pre-coding read order (mandatory)
+## Triage (mandatory — before any context load)
 
+Classify every incoming change before loading context or generating tasks.
+See `.ai/workflows/generate-tasks.md` TRIAGE section for full rules.
+
+| Level | Criteria | Output |
+|---|---|---|
+| TRIVIAL | Single file, no public contract change, clear validation, low blast radius | Direct fix — no task file |
+| SIMPLE | ≤2 files, no cross-module contract, clear path, low blast radius | Task note: TASK + DONE WHEN only |
+| STANDARD | Cross-file, design decision, public contract changed, or validation unclear | Full task file |
+| EPIC | Multi-session, multiple modules, new architecture pattern | Full task file + memory file |
+
+**Safety override — force STANDARD regardless of above when touching:**
+auth / session / tokens · payment / billing · database migrations · tenant isolation · infra / runtime config · shared contracts (types exported across modules)
+
+---
+
+## Pre-coding read order (load per classification — not always all steps)
+
+**TRIVIAL:** AGENTS.md golden rules + grep target file only.
+**SIMPLE:** AGENTS.md + `.ai/skills/<module>.md` only.
+**STANDARD / EPIC:**
 1. `AGENTS.md`
 2. `docs/CUTOFF.md`
-3. `.ai/skills/<module>.md` — if exists (skip source scan)
-4. `docs/modules/<module>/*` — only if in CUTOFF.md AND no skill file
-5. `.ai/memory/<feature-slug>-context.md` — only if resuming multi-session
+3. `.ai/SKILLS-TODO.md` — check ❓ rows before starting
+4. `.ai/skills/<module>.md` — if exists (skip source scan)
+5. `docs/modules/<module>/*` — only if in CUTOFF.md AND no skill file
+6. `docs/ARCHITECTURE.md` — only if task involves new resource/endpoint/module
+7. `.ai/memory/<feature-slug>-context.md` — only if resuming multi-session
 
-Do not scan the entire repo. Load ARCHITECTURE.md only when task involves
-a new resource, endpoint, or module (see PATTERN MATCHING in generate-tasks.md).
+Do not scan the entire repo.
 
 ---
 
@@ -31,14 +52,15 @@ If found: execute or update. Do NOT create duplicates.
 
 ## Golden rules
 
-1. Minimal change — no unsolicited refactors.
-2. Grep before edit — confirm paths exist before touching files.
-3. No hallucinated features — if unclear, stop and ask.
-4. One final report — no intermediate dumps.
-5. Stop on errors (compile fail, test fail, 4xx/5xx).
-6. Self-validate against DONE WHEN before reporting done.
-7. Update docs per DOC UPDATE before reporting done.
-8. Task STEPS use positive instructions only.
+1. Triage before context load — classify first, load only what the level requires.
+2. Minimal change — no unsolicited refactors.
+3. Grep before edit — confirm paths exist before touching files.
+4. No hallucinated features — if unclear, stop and ask.
+5. One final report — no intermediate dumps.
+6. Stop on errors (compile fail, test fail, 4xx/5xx).
+7. Self-validate against DONE WHEN before reporting done.
+8. Update docs only when the change affects how future humans or agents understand, navigate, or safely modify the system — use the doc trigger matrix in generate-tasks.md.
+9. Task STEPS use positive instructions only.
 
 ---
 
