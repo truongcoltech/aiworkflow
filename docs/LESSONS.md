@@ -17,8 +17,15 @@ What happened: {brief description of the incident or bug}
 Root cause: {technical reason}
 Rule: {concrete "never do X" / "always do Y" statement}
 Fix: {what resolved it}
-Constraint added: AGENTS.md → <section> | none
+Constraint added: AGENTS.md → {section} | none
+Decisions-ref: DECISION-NNN | none          ← optional — omit if no ADR was created
+Superseded-by: LESSON-NNN ({reason}) | —    ← optional — omit if still active
 ```
+
+**Field rules:**
+
+- `Decisions-ref`: fill only when the lesson led to a formal ADR in `docs/DECISIONS.md`. Leave out (don't write `none`) if no ADR exists — omitting keeps entries clean.
+- `Superseded-by`: fill only when the lesson is no longer valid (e.g. library upgraded, pattern replaced). Absence means active — no `Status: Active` field needed.
 
 ---
 
@@ -52,5 +59,7 @@ Root cause: No `attempts` cap set on the queue job config. BullMQ default is unl
 Rule: Always set `attempts` and `backoff` on every BullMQ job. Never rely on the default.
 Fix: Added `attempts: 3, backoff: { type: 'exponential', delay: 2000 }` to all job definitions.
 Constraint added: AGENTS.md → Project-specific constraints
+Decisions-ref: DECISION-001
+Superseded-by: —
 
 -->
