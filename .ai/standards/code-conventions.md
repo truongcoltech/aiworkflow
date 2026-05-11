@@ -1,48 +1,52 @@
 # Code Conventions — V1.0
-<!-- Stack: Node.js + TypeScript, Next.js 14 App Router, Tailwind -->
 
-## TypeScript
+<!-- Fill: extend or replace these rules after repo-scan to match your stack and language -->
+
+## TypeScript (if applicable)
 
 - Strict mode always on. `any` only when unavoidable — must have inline comment explaining why.
 - Prefer `unknown` over `any` for external or untyped data.
-- Export types from `shared/types/index.ts` — no scattered inline exports across modules.
+- Export types from a central shared types module — no scattered inline exports across modules.
 - No `Promise.all` for operations with sequential dependencies — use sequential `await`.
-- Interface prefix `I` not used. Plain names: `Article`, `AgentResult`, `KnowledgeChunk`.
+
+<!-- Add or replace with language-specific type rules if not TypeScript -->
 
 ## Naming
 
 | Artifact | Convention |
 |---|---|
-| Files | kebab-case (`article.service.ts`, `topic.agent.ts`) |
+| Files | kebab-case (`user.service.ts`, `auth.handler.go`) |
 | Classes | PascalCase |
 | Functions / variables | camelCase |
 | Constants | UPPER_SNAKE_CASE |
 | DB columns | snake_case |
-| Enums | PascalCase key + PascalCase value |
 | URL paths | kebab-case |
+
+<!-- Fill: adjust naming conventions per language and framework after repo-scan -->
 
 ## Module structure
 
-- Each module has a single entry point: `<module>.service.ts` or `index.ts`.
+- Each module has a single entry point (`<module>.service.ts`, `index.ts`, or equivalent).
 - No circular imports between modules.
-- Domain logic in service layer — not in controllers, handlers, or workers.
-- Workers dispatch to agents. Agents do not call workers. No circular agent→worker→agent flow.
-- `shared/` exports types and utils only — no business logic in shared.
+- Domain logic in service layer — not in controllers, handlers, or background jobs.
+- Background workers and job handlers dispatch to services — no business logic in job files.
+- Shared module exports types and utils only — no business logic in shared.
 
 ## Error handling
 
 | Context | Rule |
 |---|---|
-| Agents | Wrap in try/catch. Write to `AgentRun.errorMessage`. Return `AgentResult { success: false }`. |
-| API handlers | Return `{ error, message, statusCode }`. Log full stack server-side. |
-| Workers | Log `{ jobId, error, stack }` on every failure. Never swallow. |
+| API handlers | Return structured error `{ error, message, statusCode }`. Log full stack server-side. Never expose stack trace in response. |
+| Background jobs | Log `{ jobId, error, stack }` on every failure. Never swallow errors. |
 | General | No naked `throw` at module boundary. No empty catch blocks. |
+
+<!-- Fill: add project-specific error handling patterns after repo-scan -->
 
 ## Logging
 
-- Include correlation ID (`articleId` or `jobId`) on every log in agent/worker context.
-- Structured logs (JSON) — no `console.log` in production code paths.
-- Log levels: `info` for state transitions, `error` for failures, `debug` for verbose agent output.
+- Include a correlation ID (e.g. request ID, job ID, entity ID) on every log in request/job context.
+- Structured logs (JSON) — no `console.log` or unstructured print in production code paths.
+- Log levels: `info` for state transitions, `error` for failures, `debug` for verbose output.
 
 ## Comments
 
@@ -55,11 +59,10 @@ Never explain what the code does. Never reference the task, PR, or callers.
 - No helper extraction unless used in 3+ places.
 - No feature flags or backwards-compat shims — change the code directly.
 
-## AI / agent specific
+## Stack-specific rules
 
-- No LangChain, LlamaIndex, or AI orchestration frameworks. Direct Anthropic SDK only.
-- Prompt cache must be enabled: `cache_control: { type: 'ephemeral' }` on all system prompts.
-- Writer Agent receives `researchSynthesis` struct — never raw crawl data.
-- Cap injected knowledge tokens per workspace config — never oversized prompts.
-- Model defaults: sub-agents → `claude-haiku-4-5-20251001`, Writer → `claude-sonnet-4-6`.
-  Do not change defaults without explicit user approval.
+<!-- Fill after repo-scan — add rules specific to this project's framework, ORM, queue system, etc. -->
+<!-- Examples: -->
+<!-- - No raw SQL string interpolation — parameterized queries or ORM always -->
+<!-- - No direct DB writes from worker/job files -->
+<!-- - No <framework-specific anti-pattern> -->

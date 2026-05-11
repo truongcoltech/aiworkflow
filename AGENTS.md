@@ -1,10 +1,11 @@
-# AGENTS.md — AI Workflow V9.3
-# Project: <PROJECT_NAME>
-# Stack: <filled by repo-scan or SKILLS-TODO.md>
+# AGENTS.md — AI Workflow V9.4
+
+Project: `<PROJECT_NAME>`
+Stack: `<fill after repo-scan — see SKILLS-TODO.md>`
 
 ## Language
-<!-- Fill after repo-scan -->
-Primary: <e.g. TypeScript / C# / Python>
+
+Primary: <e.g. TypeScript / Python / Go>
 Docs and comments: English only.
 
 ---
@@ -29,8 +30,11 @@ auth / session / tokens · payment / billing · database migrations · tenant is
 ## Pre-coding read order (load per classification — not always all steps)
 
 **TRIVIAL:** AGENTS.md golden rules + grep target file only.
+
 **SIMPLE:** AGENTS.md + `.ai/skills/<module>.md` only.
+
 **STANDARD / EPIC:**
+
 1. `AGENTS.md`
 2. `docs/CUTOFF.md`
 3. `.ai/SKILLS-TODO.md` — check ❓ rows before starting
@@ -58,8 +62,8 @@ If found: execute or update. Do NOT create duplicates.
 4. No hallucinated features — if unclear, stop and ask.
 5. One final report — no intermediate dumps.
 6. Stop on errors (compile fail, test fail, 4xx/5xx).
-7. Self-validate against DONE WHEN before reporting done.
-8. Update docs only when the change affects how future humans or agents understand, navigate, or safely modify the system — use the doc trigger matrix in generate-tasks.md.
+7. Done = DONE WHEN conditions met AND applicable standards hard gates pass. Both are required.
+8. Update docs only when the change affects how future humans or agents understand, navigate, or safely modify the system — use the doc trigger matrix in `generate-tasks.md`.
 9. Task STEPS use positive instructions only.
 
 ---
@@ -72,7 +76,7 @@ Load relevant standards before implementation. Match to task type — not all fo
 |---|---|
 | Any code change | `.ai/standards/code-conventions.md` |
 | Auth, billing, migrations, tenant isolation, infra config, shared contracts | `.ai/standards/security.md` |
-| New service / agent / endpoint / worker / bug fix | `.ai/standards/testing-policy.md` |
+| New service / endpoint / worker / bug fix | `.ai/standards/testing-policy.md` |
 | Frontend component or page | `.ai/standards/ui-visual-testing.md` |
 | Any STANDARD or EPIC task | `.ai/standards/definition-of-done.md` |
 
@@ -81,43 +85,62 @@ Validate against loaded standards before reporting done. Standards are part of D
 ---
 
 ## Authentication
-<!-- Fill after repo-scan — describe auth pattern for this project -->
-<!-- Example: JWT Bearer token / Session cookie / API key / OAuth -->
-<AUTH_PATTERN>
+
+<!-- Fill after repo-scan -->
+<!-- Examples: JWT Bearer token · Session cookie · API key · OAuth 2.0 -->
+
+Auth pattern: <AUTH_PATTERN>
+
+Key questions to fill in:
+
+- How are tokens verified? (middleware vs handler)
+- Where does tenant/org/workspace scoping come from? (session vs request body)
+- What is the role/permission model?
 
 ---
 
 ## Error handling
+
 <!-- Fill after repo-scan -->
-<!-- Example patterns: -->
-<!-- - API: structured { error, message, statusCode } + log full stack -->
-<!-- - Workers: log { jobId, error, stack } on every failure -->
-<!-- - UI: display error details in dev mode, not just toast -->
+<!-- Examples: -->
+<!-- - API: return { error, message, statusCode } + log full stack server-side -->
+<!-- - Background jobs: log { jobId, error, stack } on every failure, never swallow -->
+<!-- - UI: show error details in dev mode only, user-friendly message in production -->
+
 <ERROR_HANDLING_PATTERN>
 
 ---
 
 ## Testing
-<!-- Fill after repo-scan -->
-<!-- Example: -->
-<!-- - New service method → unit test with mocks -->
-<!-- - New API endpoint → smoke test (auth + happy path) -->
-<!-- - Mock all external calls — never hit real DB or APIs in unit tests -->
+
+Full test policy: see `.ai/standards/testing-policy.md`
+
+<!-- Fill after repo-scan — add project-specific test commands and key rules -->
+<!-- Examples: -->
+<!-- - Unit tests: mock all external calls — never hit real DB or API -->
+<!-- - Integration tests: use real test DB — never mock the database -->
+<!-- - Bug fixes: always include a regression test -->
+
 <TESTING_PATTERN>
 
 ---
 
 ## Project-specific constraints
-<!-- Fill during work — add rules that are NOT in golden rules above -->
-<!-- Example: -->
+
+<!-- Fill during work — rules specific to this project not covered by golden rules or standards -->
+<!-- Examples: -->
 <!-- - All DB queries must filter by tenantId -->
-<!-- - Workers must not write DB directly -->
+<!-- - No business logic in worker/job files — dispatch only -->
+<!-- - Never overwrite versioned records without creating a snapshot first -->
+
 <PROJECT_CONSTRAINTS>
 
 ---
 
 ## Build commands
+
 <!-- Fill after repo-scan -->
+
 | Command | What |
 |---|---|
 | `<build>` | Build project |

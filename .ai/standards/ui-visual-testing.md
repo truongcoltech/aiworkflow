@@ -2,10 +2,10 @@
 
 ## Scope — load this standard when the task touches:
 
-- Next.js pages or components
+- Frontend pages or components
 - Layout, spacing, typography, or color changes
 - Loading, error, or empty states
-- Form interactions, modals, notifications
+- Form interactions, modals, or notifications
 - Responsive breakpoints
 
 ## Required checks per UI change
@@ -24,11 +24,11 @@
 - [ ] Error states surface visibly — no silent failure
 - [ ] No overflow or clipping at 375px and 1280px
 
-### Content rendering (article body, AI-generated output)
+### Dynamic or user-generated content rendering
 
 - [ ] Long content does not break layout
-- [ ] Vietnamese text and special characters render correctly
-- [ ] Workflow status labels and badges are accurate
+- [ ] Special characters and international text render correctly
+- [ ] Status labels and state indicators are accurate
 
 ## Screenshot / visual diff
 
@@ -36,16 +36,16 @@
 - Phase 2: automate with Playwright screenshot diff or Chromatic.
 - When taking screenshots: capture both mobile and desktop for any layout change.
 
-## Accessibility minimum (MVP)
+## Accessibility minimum
 
 - All interactive elements keyboard-reachable.
-- All images have meaningful `altText` (enforced by `ImageAsset.altText` field).
+- All images have meaningful alt text.
 - Body text meets WCAG AA contrast.
 - Form inputs have associated labels.
 
 ## When this standard does NOT apply
 
-- Logic-only changes (agent, service, worker) with no UI touch
+- Logic-only changes (service, worker, utility) with no UI touch
 - Type-only or config-only changes with no rendered output
 
 ## Agent note
