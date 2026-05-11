@@ -15,3 +15,4 @@
 - Touch only the failing path.
 - If bug = missing auth/guard → add rule to AGENTS.md + log in DECISIONS.md.
 - If same pattern appears twice → add as golden rule in AGENTS.md.
+- If fix reveals a pattern that must never repeat → add a LESSON entry to `docs/LESSONS.md` (see format there). Not every bug — only dangerous patterns.

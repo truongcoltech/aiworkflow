@@ -41,7 +41,8 @@ auth / session / tokens · payment / billing · database migrations · tenant is
 4. `.ai/skills/{module}.md` — if exists (skip source scan)
 5. `docs/modules/{module}/` — only if in CUTOFF.md AND no skill file
 6. `docs/ARCHITECTURE.md` — only if task involves new resource/endpoint/module
-7. `.ai/memory/{feature-slug}-context.md` — only if resuming multi-session
+7. `docs/LESSONS.md` — if task touches a module with a known lesson entry
+8. `.ai/memory/{feature-slug}-context.md` — only if resuming multi-session
 
 Do not scan the entire repo.
 

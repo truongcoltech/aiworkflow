@@ -177,14 +177,14 @@ Migration: none
 
 **Meta-rule (apply this first):** Update docs only when the change affects how future humans or agents understand, navigate, or safely modify the system.
 
-| Change type | `CUTOFF.md` date | `skills/<module>.md` | `ARCHITECTURE.md` | `DECISIONS.md` |
-|---|---|---|---|---|
-| Bug fix | ❌ | ❌ | ❌ | ❌ |
-| New endpoint | ✅ | ✅ if interface changed | ❌ | ❌ |
-| New module | ✅ | ✅ new stub | ✅ | optional |
-| New arch pattern / decision | ❌ | ❌ | ✅ | ✅ |
-| Config / env change | ✅ | ❌ | ❌ | optional |
-| Refactor (no contract change) | ❌ | ❌ | ❌ | ❌ |
+| Change type | `CUTOFF.md` date | `skills/{module}.md` | `ARCHITECTURE.md` | `DECISIONS.md` | `LESSONS.md` |
+|---|---|---|---|---|---|
+| Bug fix | ❌ | ❌ | ❌ | ❌ | ✅ if dangerous pattern |
+| New endpoint | ✅ | ✅ if interface changed | ❌ | ❌ | ❌ |
+| New module | ✅ | ✅ new stub | ✅ | optional | ❌ |
+| New arch pattern / decision | ❌ | ❌ | ✅ | ✅ | ❌ |
+| Config / env change | ✅ | ❌ | ❌ | optional | ❌ |
+| Refactor (no contract change) | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 When in doubt: apply the meta-rule above — the table is a fast-path, not the final word.
 
