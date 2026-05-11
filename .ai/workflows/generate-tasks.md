@@ -56,12 +56,12 @@ Convert a requirement into task files + execution plan.
 1. `AGENTS.md`
 2. `docs/CUTOFF.md`
 3. `.ai/SKILLS-TODO.md` — check for ❓ rows before starting
-4. `.ai/skills/<module>.md` — if exists (skip source scan)
-5. `docs/modules/<module>/*` — only if in CUTOFF.md AND no skill file
+4. `.ai/skills/{module}.md` — if exists (skip source scan)
+5. `docs/modules/{module}/` — only if in CUTOFF.md AND no skill file
 6. `docs/ARCHITECTURE.md` — only if task involves new resource/endpoint/module
 
 **TRIVIAL:** Load AGENTS.md golden rules + grep target file only.
-**SIMPLE:** Load AGENTS.md + relevant `.ai/skills/<module>.md` only. Skip steps 2–6.
+**SIMPLE:** Load AGENTS.md + relevant `.ai/skills/{module}.md` only. Skip steps 2–6.
 
 **If SKILLS-TODO.md has ❓ rows needed for this task:**
 Stop. Ask human. Fill the row. Update AGENTS.md. Then continue.
@@ -223,7 +223,7 @@ Rules: Codex groups first, Cline last. Independent tasks in same group.
 
 ## Epic memory file
 
-Create `.ai/memory/<slug>-context.md` for EPIC work:
+Create `.ai/memory/{slug}-context.md` for EPIC work:
 
 ```markdown
 # <Feature> — Context
