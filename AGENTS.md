@@ -64,6 +64,22 @@ If found: execute or update. Do NOT create duplicates.
 
 ---
 
+## Standards
+
+Load relevant standards before implementation. Match to task type — not all for every task.
+
+| Task touches | Load |
+|---|---|
+| Any code change | `.ai/standards/code-conventions.md` |
+| Auth, billing, migrations, tenant isolation, infra config, shared contracts | `.ai/standards/security.md` |
+| New service / agent / endpoint / worker / bug fix | `.ai/standards/testing-policy.md` |
+| Frontend component or page | `.ai/standards/ui-visual-testing.md` |
+| Any STANDARD or EPIC task | `.ai/standards/definition-of-done.md` |
+
+Validate against loaded standards before reporting done. Standards are part of DONE WHEN.
+
+---
+
 ## Authentication
 <!-- Fill after repo-scan — describe auth pattern for this project -->
 <!-- Example: JWT Bearer token / Session cookie / API key / OAuth -->
