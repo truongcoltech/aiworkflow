@@ -42,6 +42,8 @@ Force upgrade to STANDARD regardless of above classification when touching:
 | STANDARD | AGENTS.md + CUTOFF.md + skills/ + ARCHITECTURE.md (if new resource) | ~5–8k |
 | EPIC | Full read order + memory context | ~10–15k |
 
+**Standards:** all levels — load applicable standards per AGENTS.md standards section before implementation. Standards tokens are in addition to the budget above.
+
 ---
 
 ## TASK
@@ -152,6 +154,7 @@ none | Add a new <resource> | Add a new endpoint | ...
 - [ ] Unit test passes (new business logic)
 - [ ] No files outside CONTEXT modified
 - [ ] All PATTERN steps completed or marked N/A
+- [ ] Standards validated: all applicable gates in `.ai/standards/definition-of-done.md` checked
 - [ ] DOC UPDATE completed
 
 ## DOC UPDATE
