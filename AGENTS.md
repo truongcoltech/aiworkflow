@@ -38,10 +38,10 @@ auth / session / tokens · payment / billing · database migrations · tenant is
 1. `AGENTS.md`
 2. `docs/CUTOFF.md`
 3. `.ai/SKILLS-TODO.md` — check ❓ rows before starting
-4. `.ai/skills/<module>.md` — if exists (skip source scan)
-5. `docs/modules/<module>/*` — only if in CUTOFF.md AND no skill file
+4. `.ai/skills/{module}.md` — if exists (skip source scan)
+5. `docs/modules/{module}/` — only if in CUTOFF.md AND no skill file
 6. `docs/ARCHITECTURE.md` — only if task involves new resource/endpoint/module
-7. `.ai/memory/<feature-slug>-context.md` — only if resuming multi-session
+7. `.ai/memory/{feature-slug}-context.md` — only if resuming multi-session
 
 Do not scan the entire repo.
 
@@ -152,7 +152,7 @@ Full test policy: see `.ai/standards/testing-policy.md`
 
 ## Output format (mandatory)
 
-```
+```text
 Files changed:
 - path — summary
 

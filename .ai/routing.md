@@ -1,8 +1,8 @@
-# AI Routing — V9.3
+# AI Routing — V9.4
 
 ## Flow
 
-```
+```text
 Human: "Setup AI workflow"
   → Claude: "New project or existing?"
 
@@ -20,7 +20,7 @@ Human: "Setup AI workflow"
 
 ## Everyday flow
 
-```
+```text
 Human writes requirement
   → Claude triages (TRIVIAL / SIMPLE / STANDARD / EPIC)
 
@@ -44,16 +44,20 @@ Human writes requirement
 
 | Actor | Does | Reads |
 |---|---|---|
-| Claude | Planning, task generation, execution plan | AGENTS.md + CUTOFF.md + skills/ |
+| Claude | Triage → planning, task generation (STANDARD/EPIC), execution plan | AGENTS.md + CUTOFF.md + skills/ + standards/ |
 | Codex | Code edits — default executor | Task file + CONTEXT files only |
 | Cline | Shell tasks or Codex quota fallback | Same task file, no edits needed |
 | Haiku | Optional batch validate (pre-PR) | Diff + task + skills/ |
 
 ## Executor — human decides at paste time
 
-Codex = all code edits, any size.
+| Triage level | What happens |
+|---|---|
+| TRIVIAL | Claude implements directly — no task file, no paste needed |
+| SIMPLE | 2-section task note → paste into Codex |
+| STANDARD / EPIC | Full task file + execution plan → Codex first, Cline (shell) last |
+
 Cline = shell required OR Codex quota exhausted.
-Execution plan groups by dependency and executor. Codex first, Cline last.
 
 ## Human gates
 
@@ -87,10 +91,11 @@ pnpm lint-workflows   # workflow drift check
 
 ## Doc paths
 <!-- Update to match your project after setup -->
+
 | What | Path |
 |---|---|
 | Module registry | `docs/CUTOFF.md` |
 | Architecture | `docs/ARCHITECTURE.md` |
 | Decisions | `docs/DECISIONS.md` |
 | Changelog | `docs/CHANGELOG.md` |
-| Skills | `.ai/skills/<module>.md` |
+| Skills | `.ai/skills/{module}.md` |
