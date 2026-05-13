@@ -332,12 +332,25 @@ Read `.ai/AGENTS.md` before doing any work. Do not add rules here.
 
 Keep the bootstrap form. Do not add rules.
 
-### 4. `.ai/routing.md`
+### 4. `.ai/exec-context.md` — auto-generated executor context
+
+Extract from `.ai/AGENTS.md` after filling it. Copy these sections verbatim:
+
+- Project name (header)
+- Auth pattern (`{{AUTH_PATTERN}}` and sub-fields)
+- Error handling (`{{ERROR_HANDLING_PATTERN}}`)
+- Build commands (`{{BUILD_CMD}}`, `{{TYPECHECK_CMD}}`, `{{TEST_CMD}}`, `{{LINT_CMD}}`)
+
+Do not copy: triage, team config, model routing, branch conventions, prompt caching, pre-coding read order, SKILLS-TODO.md discipline, memory expiry.
+
+The static sections (role statement, golden rules, standards table, skills maintenance, output format) come from the exec-context.md template — do not regenerate from AGENTS.md.
+
+### 5. `.ai/routing.md`
 
 Update executor section with `{{AI_TOOLS}}` list.
 Fill model routing table with the correct `{{MODEL_ROUTING}}` table.
 
-### 5. `.ai/SKILLS-TODO.md`
+### 6. `.ai/SKILLS-TODO.md`
 
 Pre-fill rows:
 
@@ -345,7 +358,7 @@ Pre-fill rows:
 - Runtime / framework → `{{FRAMEWORK}}` → ✅
 - Leave other rows as ❓
 
-### 6. `docs/ARCHITECTURE.md`
+### 7. `docs/ARCHITECTURE.md`
 
 Fill header only:
 
@@ -365,7 +378,8 @@ Setup complete — {{PROJECT_NAME}}
 
 WRITTEN:
   .ai/AGENTS.md        filled (team config, model routing, branch conventions)
-  .ai/routing.md       updated (executor tools, model routing table)
+  .ai/exec-context.md  auto-generated (auth, error handling, build commands)
+  .ai/routing.md       updated (role detection, executor tools, model routing)
   .ai/SKILLS-TODO.md   pre-filled (language + framework)
   docs/ARCHITECTURE.md header filled
   root AGENTS.md       thin pointer

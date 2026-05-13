@@ -1,56 +1,86 @@
 # AI Routing — V1.0
 
-## Flow
+## Entry point — role detection
+
+Every message goes through role detection first. Role determines context loaded and output produced.
 
 ```text
-Human: "Setup AI workflow"
-  → Claude: "New project or existing?"
+Message received
+  → Detect role from message intent
 
-  NEW PROJECT:
-    → Generate skeletons with placeholders
-    → SKILLS-TODO.md all ❓
-    → Begin work → Claude fills SKILLS-TODO progressively
+  ARCHITECT signals:
+    design · plan · architect · break down · generate tasks
+    review and propose · brainstorm · analyze
+    how should we · what's the approach · what should we
 
-  EXISTING PROJECT:
-    → repo-scan workflow
-    → Pre-flight conflict check → human confirms
-    → Merge/replace per strategy → SKILLS-TODO filled from scan
-    → Begin work
+  EXECUTOR signals:
+    implement · fix · build · add · create · write
+    refactor · update <thing> · change <thing>
+
+  Ambiguous → ARCHITECT (default — plan before acting)
 ```
 
-## Everyday flow
+---
+
+## Context loaded by role
+
+| Role | Loads | Does NOT load |
+| --- | --- | --- |
+| **ARCHITECT** | Full `.ai/AGENTS.md` + read order per triage level | `exec-context.md` |
+| **EXECUTOR** | `exec-context.md` + task CONTEXT files + standards | `.ai/AGENTS.md` |
+| **EXECUTOR (bug fix)** | `exec-context.md` + grep `LESSONS.md` + grep `DECISIONS.md` + standards | `.ai/AGENTS.md` |
+
+---
+
+## Architect flow
 
 ```text
-Human writes requirement
-  → Claude triages (TRIVIAL / SIMPLE / STANDARD / EPIC)
+ARCHITECT role
+  → Load .ai/AGENTS.md
+  → Triage (TRIVIAL / SIMPLE / STANDARD / EPIC)
 
   TRIVIAL:
-    → Direct fix (no task file)
+    → Implement directly (no task file)
     → Human reviews diff → commit → push
 
   SIMPLE:
-    → Task note (TASK + DONE WHEN only)
-    → Human runs task → executor (see {{AI_TOOLS}})
+    → Generate 2-section task note
+    → Human runs → executor
     → Human reviews diff → commit → push
 
   STANDARD / EPIC:
-    → Claude generates task files + execution plan
+    → Generate task files + execution plan
     → Human runs code-edit group → executor
     → Human runs shell group → terminal (if needed)
     → Human reviews diff → batch commit → push
 ```
 
+## Executor flow
+
+```text
+EXECUTOR role
+  → Load exec-context.md
+  → Read task file (TASK, CONTEXT, STEPS, DONE WHEN, DOC UPDATE, COMMIT)
+  → Load applicable standards (per exec-context.md standards table)
+  → [Bug fix only] grep LESSONS.md + DECISIONS.md for affected module
+  → Implement STEPS
+  → Validate all DONE WHEN + standards gates
+  → Report using exec-context.md output format
+```
+
+---
+
 ## Roles
 
-| Actor | Does | Reads |
+| Actor | Role | Context loaded |
 | --- | --- | --- |
-| Claude | Triage → planning, task generation (STANDARD/EPIC), execution plan | `.ai/AGENTS.md` + CUTOFF.md + skills/ + standards/ |
-| Executor | Code edits — tool(s) listed in `{{AI_TOOLS}}` | Task file + CONTEXT files only |
-| Shell runner | Shell tasks — Cline or terminal | Same task file, no edits needed |
-| Haiku | Optional batch validate (pre-PR) | Diff + task + skills/ |
-| Human | Gate: watch scope, diff review, auth/schema task skim, PR approve | — |
+| Claude (architect) | Design, triage, task generation, execution plan | `.ai/AGENTS.md` + triage-level read order |
+| Claude (executor) | Implement task directly when message is execution-intent | `exec-context.md` + task CONTEXT + standards |
+| Codex / Cursor / Cline | Code edits — external executor tools | `exec-context.md` + task CONTEXT + standards |
+| Shell runner | Shell tasks — Cline or terminal | Task file only |
+| Human | Gate: watch scope, diff review, auth/schema skim, PR approve | — |
 
-<!-- {{AI_TOOLS}} is filled by setup wizard. If only Claude Code: executor = Claude Code directly. -->
+---
 
 ## Model routing
 
@@ -58,15 +88,9 @@ Human writes requirement
 
 `{{MODEL_ROUTING}}`
 
-**Rule:** Never upgrade model without updating this table. Never use Opus for TRIVIAL or SIMPLE tasks.
+**Rule:** Never use Opus for TRIVIAL or SIMPLE tasks. Never upgrade model without updating this table.
 
-## Executor — human decides at run time
-
-| Triage level | What happens |
-| --- | --- |
-| TRIVIAL | Claude implements directly — no task file |
-| SIMPLE | 2-section task note → executor |
-| STANDARD / EPIC | Full task file + execution plan → code edits first, shell tasks last |
+---
 
 ## Human gates
 
@@ -76,11 +100,35 @@ Human writes requirement
 | Diff review | Before every commit |
 | Task skim | Auth / schema tasks only |
 
+---
+
+## Setup flow (one-time per project)
+
+```text
+Human: "setup ai workflow"
+  → Run .ai/workflows/setup.md
+  → Interview (10 questions, fewer for solo)
+  → Generate: .ai/AGENTS.md + exec-context.md + routing.md + SKILLS-TODO.md + ARCHITECTURE.md
+
+  NEW PROJECT:
+    → Generate skeletons with placeholders
+    → SKILLS-TODO.md all ❓
+    → Fill progressively during work
+
+  EXISTING PROJECT:
+    → Run .ai/workflows/repo-scan.md
+    → Pre-flight conflict check → human confirms
+    → Merge/replace per strategy → fill SKILLS-TODO.md + exec-context.md from scan
+```
+
+---
+
 ## File merge strategy (existing projects)
 
 | File/folder | On adopt |
 | --- | --- |
 | `.ai/AGENTS.md` | Source of truth — merge filled values, keep project constraints |
+| `.ai/exec-context.md` | Auto-generated — regenerate from AGENTS.md after merge |
 | `.ai/workflows/*.md` | Replace |
 | `.ai/routing.md` | Replace |
 | `.ai/SKILLS-TODO.md` | Generate fresh |
@@ -90,6 +138,8 @@ Human writes requirement
 | `docs/**` | Never touch |
 | `.ai/module-map.md` | Never touch |
 
+---
+
 ## Optional scripts
 
 ```bash
@@ -98,8 +148,9 @@ pnpm docs-sync        # pre-PR doc check
 pnpm lint-workflows   # workflow drift check
 ```
 
+---
+
 ## Doc paths
-<!-- Update to match your project after setup -->
 
 | What | Path |
 | --- | --- |
@@ -107,4 +158,5 @@ pnpm lint-workflows   # workflow drift check
 | Architecture | `docs/ARCHITECTURE.md` |
 | Decisions | `docs/DECISIONS.md` |
 | Changelog | `docs/CHANGELOG.md` |
+| Lessons | `docs/LESSONS.md` |
 | Skills | `.ai/skills/{module}.md` |

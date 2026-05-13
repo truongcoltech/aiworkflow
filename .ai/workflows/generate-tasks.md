@@ -1,6 +1,18 @@
 # generate-tasks.md — V1.0
 
-## TRIAGE (run first — before any context load)
+## ROLE CHECK (run before triage — architect only)
+
+This workflow is for **ARCHITECT role only**.
+
+If message intent is executor (implement / fix / build / write / refactor):
+→ Stop. Do not generate task files. Load `exec-context.md` and implement directly.
+
+If message intent is architect (design / plan / break down / analyze / review):
+→ Continue to TRIAGE below.
+
+---
+
+## TRIAGE (run after role check — architect only)
 
 Classify the change before doing anything else. Do not load context until classification is done.
 
@@ -197,14 +209,20 @@ Migration: none
 
 **Meta-rule (apply this first):** Update docs only when the change affects how future humans or agents understand, navigate, or safely modify the system.
 
-| Change type | `CUTOFF.md` date | `skills/{module}.md` | `ARCHITECTURE.md` | `DECISIONS.md` | `LESSONS.md` |
-| --- | --- | --- | --- | --- | --- |
-| Bug fix | ❌ | ❌ | ❌ | ❌ | ✅ if dangerous pattern |
-| New endpoint | ✅ | ✅ if interface changed | ❌ | ❌ | ❌ |
-| New module | ✅ | ✅ new stub | ✅ | optional | ❌ |
-| New arch pattern / decision | ❌ | ❌ | ✅ | ✅ | ❌ |
-| Config / env change | ✅ | ❌ | ❌ | optional | ❌ |
-| Refactor (no contract change) | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Change type | `CUTOFF.md` date | `skills/{module}.md` | `ARCHITECTURE.md` | `DECISIONS.md` | `LESSONS.md` | `exec-context.md` |
+| --- | --- | --- | --- | --- | --- | --- |
+| Bug fix | ❌ | ❌ | ❌ | ❌ | ✅ if dangerous pattern | ❌ |
+| New endpoint | ✅ | ✅ if interface changed | ❌ | ❌ | ❌ | ❌ |
+| New module | ✅ | ✅ new stub | ✅ | optional | ❌ | ❌ |
+| New arch pattern / decision | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| Config / env change | ✅ | ❌ | ❌ | optional | ❌ | ❌ |
+| Refactor (no contract change) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Auth pattern changed | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ regenerate |
+| Error handling changed | ❌ | ❌ | ❌ | optional | ❌ | ✅ regenerate |
+| Build commands changed | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ regenerate |
+| Golden rules changed | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ regenerate |
+
+**exec-context.md regenerate rule:** run repo-scan or setup wizard to regenerate. Do not hand-edit.
 
 When in doubt: apply the meta-rule above — the table is a fast-path, not the final word.
 

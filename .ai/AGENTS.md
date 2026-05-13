@@ -29,6 +29,24 @@ Docs and comments: English only.
 
 ---
 
+## Role detection (run before triage — before any further context load)
+
+Detect role from message intent. Load the rest of this file only if ARCHITECT.
+
+**ARCHITECT** — message signals: `design` · `plan` · `architect` · `break down` · `generate tasks` · `review and propose` · `brainstorm` · `analyze` · `how should we` · `what's the approach` · `what should we`
+
+→ Continue loading this file. Run triage. Generate task files or fix directly per triage level.
+
+**EXECUTOR** — message signals: `implement` · `fix` · `build` · `add` · `create` · `write` · `refactor` · `update <specific thing>` · `change <specific thing>`
+
+→ Stop loading this file. Load `.ai/exec-context.md` instead. Implement task directly.
+
+**Default:** ambiguous message → **ARCHITECT**. Plan before acting.
+
+**Mid-task rule:** if role becomes unclear during work — stop and ask. Never switch context mid-task silently.
+
+---
+
 ## Triage (mandatory — before any context load)
 
 Classify every incoming change before loading context or generating tasks.

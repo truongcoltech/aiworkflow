@@ -91,7 +91,26 @@ Mark each found row `✅`. Mark each not found `❓` with a note of what to ask.
 
 ---
 
-## Step 5 — build module map (fills .ai/module-map.md)
+## Step 5 — generate exec-context.md (auto-generated from .ai/AGENTS.md)
+
+After Steps 2–4 have filled auth, error handling, and build commands into `.ai/AGENTS.md`:
+
+```text
+1. Open .ai/exec-context.md template
+2. Copy from filled .ai/AGENTS.md into exec-context.md:
+   - {{AUTH_PATTERN}}, {{AUTH_TOKEN_VERIFICATION}}, {{AUTH_TENANT_SCOPING}}, {{AUTH_ROLE_MODEL}}
+   - {{ERROR_HANDLING_PATTERN}}
+   - {{BUILD_CMD}}, {{TYPECHECK_CMD}}, {{TEST_CMD}}, {{LINT_CMD}}
+   - {{PROJECT_NAME}}
+3. Do NOT copy: triage, team config, model routing, branch conventions,
+   prompt caching, pre-coding read order, SKILLS-TODO.md discipline, memory expiry
+4. Static sections stay as written in the template — do not overwrite from AGENTS.md
+5. Write the filled exec-context.md
+```
+
+---
+
+## Step 6 — build module map (fills .ai/module-map.md)
 
 ```text
 1. List top-level directories in src/ (or equivalent source root)
@@ -104,7 +123,7 @@ Mark each found row `✅`. Mark each not found `❓` with a note of what to ask.
 
 ---
 
-## Step 6 — populate CUTOFF.md skeleton (fills docs/CUTOFF.md)
+## Step 7 — populate CUTOFF.md skeleton (fills docs/CUTOFF.md)
 
 ```text
 1. For each module identified in Step 5:
@@ -115,7 +134,7 @@ Mark each found row `✅`. Mark each not found `❓` with a note of what to ask.
 
 ---
 
-## Step 7 — pre-flight conflict check (existing projects only)
+## Step 8 — pre-flight conflict check (existing projects only)
 
 Before merging any workflow files, check:
 
@@ -134,13 +153,14 @@ Output conflict report. **Wait for human confirmation before writing any files.*
 
 ---
 
-## Step 8 — apply merge strategy (after human confirms)
+## Step 9 — apply merge strategy (after human confirms)
 
 Apply per `routing.md` merge strategy:
 
 | File/folder | Action |
 | --- | --- |
 | `.ai/AGENTS.md` | Merge filled values into template — keep existing project constraints |
+| `.ai/exec-context.md` | Regenerate from filled AGENTS.md (Step 5) |
 | `.ai/workflows/*.md` | Replace with new versions |
 | `.ai/routing.md` | Replace |
 | `.ai/SKILLS-TODO.md` | Generate fresh from Step 1 results |
@@ -174,6 +194,11 @@ After completing all steps, output:
 ✅ Error handling: <summary>
 ✅ Build commands: <list>
 ✅ Test pattern: <summary>
+
+### .ai/exec-context.md generated
+✅ Auth values propagated from AGENTS.md
+✅ Error handling propagated from AGENTS.md
+✅ Build commands propagated from AGENTS.md
 
 ### Files preserved (not touched)
 - .ai/tasks/** — N task files
