@@ -29,7 +29,8 @@ Do **not** load `.ai/AGENTS.md` — that is architect context only.
 11. Update docs per DOC UPDATE.
 12. Validate against all loaded standards — **blocking gate before reporting done.**
 13. Check every DONE WHEN checkbox.
-14. Report using output format from `exec-context.md` + COMMIT from task file.
+14. If `{{QA_MODE}}` is `task` (STANDARD/EPIC tasks): verify `.qa.md` is accurate — update affected features and risk if actual changes differ from what architect planned.
+15. Report using output format from `exec-context.md` + COMMIT from task file.
 
 If blocked: report `BLOCKED: <reason>`. Do not guess or improvise.
 
@@ -44,3 +45,4 @@ If blocked: report `BLOCKED: <reason>`. Do not guess or improvise.
 - [ ] Soft gate skips documented with justification in DONE WHEN
 - [ ] DOC UPDATE completed
 - [ ] No claim made about existing code without citing file:line
+- [ ] If `{{QA_MODE}} = task`: `{task-name}.qa.md` exists, accurate, executor verified checkbox ticked

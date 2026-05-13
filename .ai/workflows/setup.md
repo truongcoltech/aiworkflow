@@ -180,6 +180,26 @@ Record as: `{{WORKFLOW_OWNER}}`
 
 ---
 
+### Q11 — QA mode (optional)
+
+Ask:
+
+> "Do you want QA impact docs generated with task files? (helps testers know what to verify)"
+
+Options:
+
+- `task` — `.qa.md` generated per STANDARD/EPIC task + EPIC summary in `docs/qa/`
+- `epic-only` — no per-task file, EPIC QA summary only at `docs/qa/{epic-slug}.qa.md`
+- `off` — no QA docs generated (default if skipped)
+
+Default if skipped: `off`
+
+Record as: `{{QA_MODE}}`
+
+Drives: `.qa.md` generation in task files, DONE WHEN QA gate, EPIC QA summary.
+
+---
+
 ## Derived values (compute after interview — do not ask human)
 
 ### tasks/ naming convention → `{{TASKS_PATH_CONVENTION}}`
@@ -305,6 +325,7 @@ Fill these tokens:
 - `{{WORKFLOW_OWNER}}`
 - `{{TICKET_FORMAT}}`
 - `{{MEMORY_EXPIRY_DAYS}}`
+- `{{QA_MODE}}`
 - `{{MODEL_ROUTING}}` — paste the correct table from §Model routing table above
 - `{{BRANCH_FORMAT}}`
 - `{{TASKS_PATH_CONVENTION}}`
@@ -377,7 +398,7 @@ After writing all files, output this to human:
 Setup complete — {{PROJECT_NAME}}
 
 WRITTEN:
-  .ai/AGENTS.md        filled (team config, model routing, branch conventions)
+  .ai/AGENTS.md        filled (team config, model routing, branch conventions, QA mode)
   .ai/exec-context.md  auto-generated (auth, error handling, build commands)
   .ai/routing.md       updated (role detection, executor tools, model routing)
   .ai/SKILLS-TODO.md   pre-filled (language + framework)

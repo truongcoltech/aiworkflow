@@ -26,6 +26,7 @@ Docs and comments: English only.
 | Workflow owner | `{{WORKFLOW_OWNER}}` |
 | Ticket format | `{{TICKET_FORMAT}}` |
 | EPIC memory expiry | `{{MEMORY_EXPIRY_DAYS}}` days |
+| QA mode | `{{QA_MODE}}` |
 
 ---
 

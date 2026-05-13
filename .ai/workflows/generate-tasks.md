@@ -118,6 +118,19 @@ Example: branch `feat/PROJ-42-auth-refresh` → slug `feat-PROJ-42-auth-refresh`
 - One task file per logical change — never bundle unrelated changes
 - Task files live in `.ai/tasks/` — never in project source directories
 - Do not touch another branch's task directory
+- When `{{QA_MODE}} = task`: every STANDARD/EPIC task file has a paired `.qa.md` same name same directory
+
+## QA mode rules
+
+Check `{{QA_MODE}}` in `.ai/AGENTS.md` team config before generating tasks.
+
+| `{{QA_MODE}}` | STANDARD task | EPIC task | EPIC close |
+| --- | --- | --- | --- |
+| `task` | Generate `{name}.qa.md` alongside task | Generate `{name}.qa.md` per task | Generate `docs/qa/{epic-slug}.qa.md` |
+| `epic-only` | No `.qa.md` | No `.qa.md` | Generate `docs/qa/{epic-slug}.qa.md` |
+| `off` | No QA docs | No QA docs | No QA docs |
+
+**TRIVIAL and SIMPLE tasks never get `.qa.md` files regardless of QA mode.**
 
 ---
 
@@ -188,6 +201,9 @@ none | Add a new <resource> | Add a new endpoint | ...
 - [ ] If interface changed: skill file for affected module updated or rewritten
 - [ ] Standards validated: all applicable gates in `.ai/standards/definition-of-done.md` checked
 - [ ] DOC UPDATE completed
+<!-- If {{QA_MODE}} = task or epic-only (EPIC tasks): -->
+- [ ] `{task-name}.qa.md` generated with accurate affected features and risk level
+- [ ] Executor verified: QA IMPACT matches actual changes made
 
 ## DOC UPDATE
 <!-- Apply trigger matrix below — do not default to "update all" -->
@@ -205,22 +221,83 @@ Migration: none
 
 ---
 
+## QA file formats (when `{{QA_MODE}}` is not `off`)
+
+### Per-task `.qa.md` (STANDARD / EPIC — same name as task file)
+
+```markdown
+# QA — {task title}
+Task: {relative task file path}
+Generated: {YYYY-MM-DD}
+Risk: low | medium | high — {one-line reason}
+
+## Affected features
+- {user-facing feature that could be impacted}
+
+## Test scenarios
+
+### Happy path
+- [ ] {what should work normally after this change}
+
+### Edge cases
+- [ ] {boundary condition or error path to verify}
+
+### Regression checks
+- [ ] {existing feature to re-verify — not changed but at risk}
+
+## Not affected (skip these)
+{features or areas testers can safely skip — be explicit}
+
+## Status
+- [ ] Executor verified: QA IMPACT matches actual changes made
+- [ ] Tester sign-off
+```
+
+### EPIC QA summary (`docs/qa/{epic-slug}.qa.md`) — generated at EPIC close
+
+```markdown
+# QA Summary — {EPIC name}
+Branch: {git branch}
+Closed: {YYYY-MM-DD}
+Tasks: {N completed}
+
+## Risk overview
+| Task | Affected features | Risk |
+| --- | --- | --- |
+| {task name} | {features} | low \| medium \| high |
+
+## Test first (high risk areas)
+1. {feature} — {reason it's high risk}
+
+## Full affected feature list
+- {feature}
+
+## Recommended test order
+1. {highest risk}
+2. {next}
+
+## Known gaps / not covered
+- {area not tested by this EPIC}
+```
+
+---
+
 ## Doc trigger matrix
 
 **Meta-rule (apply this first):** Update docs only when the change affects how future humans or agents understand, navigate, or safely modify the system.
 
-| Change type | `CUTOFF.md` date | `skills/{module}.md` | `ARCHITECTURE.md` | `DECISIONS.md` | `LESSONS.md` | `exec-context.md` |
-| --- | --- | --- | --- | --- | --- | --- |
-| Bug fix | ❌ | ❌ | ❌ | ❌ | ✅ if dangerous pattern | ❌ |
-| New endpoint | ✅ | ✅ if interface changed | ❌ | ❌ | ❌ | ❌ |
-| New module | ✅ | ✅ new stub | ✅ | optional | ❌ | ❌ |
-| New arch pattern / decision | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
-| Config / env change | ✅ | ❌ | ❌ | optional | ❌ | ❌ |
-| Refactor (no contract change) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Auth pattern changed | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ regenerate |
-| Error handling changed | ❌ | ❌ | ❌ | optional | ❌ | ✅ regenerate |
-| Build commands changed | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ regenerate |
-| Golden rules changed | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ regenerate |
+| Change type | `CUTOFF.md` date | `skills/{module}.md` | `ARCHITECTURE.md` | `DECISIONS.md` | `LESSONS.md` | `exec-context.md` | `{task}.qa.md` |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Bug fix | ❌ | ❌ | ❌ | ❌ | ✅ if dangerous pattern | ❌ | ✅ if QA_MODE on |
+| New endpoint | ✅ | ✅ if interface changed | ❌ | ❌ | ❌ | ❌ | ✅ if QA_MODE on |
+| New module | ✅ | ✅ new stub | ✅ | optional | ❌ | ❌ | ✅ if QA_MODE on |
+| New arch pattern / decision | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ | ✅ if QA_MODE on |
+| Config / env change | ✅ | ❌ | ❌ | optional | ❌ | ❌ | ❌ |
+| Refactor (no contract change) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ if QA_MODE on |
+| Auth pattern changed | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ regenerate | ❌ |
+| Error handling changed | ❌ | ❌ | ❌ | optional | ❌ | ✅ regenerate | ❌ |
+| Build commands changed | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ regenerate | ❌ |
+| Golden rules changed | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ regenerate | ❌ |
 
 **exec-context.md regenerate rule:** run repo-scan or setup wizard to regenerate. Do not hand-edit.
 
@@ -235,15 +312,19 @@ Always output this block in chat:
 ```
 ## Execution plan
 
-### Codex — paste all at once (independent):
+### Executor — run all at once (independent):
 .ai/tasks/<module>/NNN-name.md
 .ai/tasks/<module>/NNN-name.md
 
-### Codex — paste after group above:
+### Executor — run after group above:
 .ai/tasks/<module>/NNN-name.md
 
-### Cline — after Codex done (shell required):
+### Shell — after executor done (shell required):
 .ai/tasks/<module>/NNN-name.md
+
+### QA files generated (when {{QA_MODE}} is not off):
+.ai/tasks/<module>/NNN-name.qa.md
+.ai/tasks/<module>/NNN-name.qa.md
 
 ### Batch commit message:
 type(scope): overall subject
@@ -255,7 +336,8 @@ Breaking: none
 Migration: none
 ```
 
-Rules: Codex groups first, Cline last. Independent tasks in same group.
+Rules: executor groups first, shell last. Independent tasks in same group.
+QA files are listed for tester reference — not sent to executor.
 
 ---
 
@@ -291,6 +373,14 @@ Auto-expire: <today + {{MEMORY_EXPIRY_DAYS}} days>
 ## Tasks
 | # | File | Status | Depends on |
 | --- | --- | --- | --- |
+
+## QA
+<!-- Accumulated from task .qa.md files — only when {{QA_MODE}} is not off -->
+Affected features so far:
+- (add as tasks complete)
+
+High risk areas:
+- (add as tasks complete)
 
 ## Next
 ```
