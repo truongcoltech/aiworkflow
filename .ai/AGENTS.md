@@ -1,4 +1,4 @@
-# AGENTS.md — AI Workflow V9.3
+# AGENTS.md — AI Workflow V1.0
 # Project: <PROJECT_NAME>
 # Stack: <filled by repo-scan or SKILLS-TODO.md>
 

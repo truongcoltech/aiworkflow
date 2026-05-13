@@ -1,4 +1,4 @@
-# AI Workflow — V9.4
+# AI Workflow — V1.0
 
 A generic, project-agnostic AI-assisted development workflow. Covers triage, task generation, execution, standards enforcement, and doc discipline. Works with any language or stack.
 

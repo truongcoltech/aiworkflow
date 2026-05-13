@@ -1,4 +1,4 @@
-# generate-tasks.md — V9.4
+# generate-tasks.md — V1.0
 
 ## TRIAGE (run first — before any context load)
 
@@ -7,7 +7,7 @@ Classify the change before doing anything else. Do not load context until classi
 ### Classification signals
 
 | Signal | Weight |
-|---|---|
+| --- | --- |
 | Blast radius — how many systems / modules / teams affected | **Primary** |
 | Contract impact — does a public interface / shared type change? | **Primary** |
 | Validation clarity — is pass/fail unambiguous without running the system? | **Primary** |
@@ -17,7 +17,7 @@ Classify the change before doing anything else. Do not load context until classi
 ### Classification levels
 
 | Level | Criteria | Output |
-|---|---|---|
+| --- | --- | --- |
 | **TRIVIAL** | Single file, no public contract change, clear validation, low blast radius | Direct fix — no task file |
 | **SIMPLE** | ≤2 files, no cross-module contract, clear path, low blast radius | Task note: TASK + DONE WHEN only |
 | **STANDARD** | Cross-file, design decision, public contract changed, or validation unclear | Full task file |
@@ -36,7 +36,7 @@ Force upgrade to STANDARD regardless of above classification when touching:
 ### Context budget per classification
 
 | Level | Load these files | Approx tokens |
-|---|---|---|
+| --- | --- | --- |
 | TRIVIAL | AGENTS.md golden rules + grep target file | ~1k |
 | SIMPLE | AGENTS.md + `.ai/skills/<module>.md` | ~2–3k |
 | STANDARD | AGENTS.md + CUTOFF.md + skills/ + ARCHITECTURE.md (if new resource) | ~5–8k |
@@ -71,7 +71,7 @@ Stop. Ask human. Fill the row. Update AGENTS.md. Then continue.
 ## Pattern matching (STANDARD / EPIC only — before writing any task file)
 
 | Task involves | Check ARCHITECTURE.md for |
-|---|---|
+| --- | --- |
 | New resource / page | "Add a new \<resource\>" checklist |
 | New API endpoint | Auth guards, validation, error handling pattern |
 | New DB table | Migration + type registration pattern |
@@ -84,11 +84,28 @@ Every checklist step must appear in STEPS or be marked `N/A — <reason>`.
 
 ## Executor rule
 
-Do NOT write executor in task files. Human decides at paste time.
-Claude outputs an execution plan — human uses it to decide what to paste where.
+Do NOT write executor in task files. Human decides at run time.
+Claude outputs an execution plan — human uses it to decide what to run where.
 
-Codex = all code edits (default).
-Cline = shell required OR Codex quota exhausted.
+Executor = tool(s) listed in `{{AI_TOOLS}}` in AGENTS.md.
+Shell runner = Cline or terminal — for shell-only steps.
+
+## tasks/ naming convention
+
+<!-- Determined by {{GIT_FLOW}} and {{TEAM_SIZE}} — filled by setup wizard -->
+
+```text
+{{TASKS_PATH_CONVENTION}}
+```
+
+**Branch slug rule:** take current git branch name, replace `/` with `-`.
+Example: branch `feat/PROJ-42-auth-refresh` → slug `feat-PROJ-42-auth-refresh`
+→ task file: `tasks/feat-PROJ-42-auth-refresh/001-add-refresh-endpoint.md`
+
+**Hard rules:**
+- One task file per logical change — never bundle unrelated changes
+- Task files live in `.ai/tasks/` — never in project source directories
+- Do not touch another branch's task directory
 
 ---
 
@@ -154,6 +171,9 @@ none | Add a new <resource> | Add a new endpoint | ...
 - [ ] Unit test passes (new business logic)
 - [ ] No files outside CONTEXT modified
 - [ ] All PATTERN steps completed or marked N/A
+- [ ] No claim made about existing code without citing file:line
+- [ ] Skill files loaded: 2+ key claims grep-verified in source (or flagged ⚠️ stale)
+- [ ] If interface changed: skill file for affected module updated or rewritten
 - [ ] Standards validated: all applicable gates in `.ai/standards/definition-of-done.md` checked
 - [ ] DOC UPDATE completed
 
@@ -178,7 +198,7 @@ Migration: none
 **Meta-rule (apply this first):** Update docs only when the change affects how future humans or agents understand, navigate, or safely modify the system.
 
 | Change type | `CUTOFF.md` date | `skills/{module}.md` | `ARCHITECTURE.md` | `DECISIONS.md` | `LESSONS.md` |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Bug fix | ❌ | ❌ | ❌ | ❌ | ✅ if dangerous pattern |
 | New endpoint | ✅ | ✅ if interface changed | ❌ | ❌ | ❌ |
 | New module | ✅ | ✅ new stub | ✅ | optional | ❌ |
@@ -223,20 +243,36 @@ Rules: Codex groups first, Cline last. Independent tasks in same group.
 
 ## Epic memory file
 
-Create `.ai/memory/{slug}-context.md` for EPIC work:
+Create `.ai/memory/{branch-slug}-{feature-slug}-context.md` for EPIC work.
+
+**Naming rule:** `{branch-slug}` = current git branch name with `/` replaced by `-`.
+Example: branch `feat/PROJ-42-auth` + feature `token-refresh` → `memory/feat-PROJ-42-auth-token-refresh-context.md`
+
+This ensures no two developers on different branches collide on the same memory file.
+
+**Expiry:** use `{{MEMORY_EXPIRY_DAYS}}` from `AGENTS.md` Team config (set by setup wizard). Default 14 if unset.
+
+**On expiry (mandatory before delete):**
+
+1. Append `## Decisions` entries → `docs/DECISIONS.md`
+2. Append failure/lesson entries → `docs/LESSONS.md`
+3. Write one-line summary → `docs/CHANGELOG.md`
+4. Delete the memory file
 
 ```markdown
 # <Feature> — Context
+Branch: <git branch name>
 Created-by: <first task ID>
 Active-until: <last task ID> done
 Owner: <module>
-Auto-expire: <today + 14 days>
+Auto-expire: <today + {{MEMORY_EXPIRY_DAYS}} days>
 
 ## State
 ## Decisions
+## Lessons
 ## Tasks
 | # | File | Status | Depends on |
-|---|---|---|---|
+| --- | --- | --- | --- |
 
 ## Next
 ```

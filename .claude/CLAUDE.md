@@ -1,4 +1,4 @@
-# .claude/CLAUDE.md — Claude Bootstrap V9.3
+# .claude/CLAUDE.md — Claude Bootstrap V1.0
 
 ## Mandatory
 Read `AGENTS.md` (repo root)/src first and follow it strictly.

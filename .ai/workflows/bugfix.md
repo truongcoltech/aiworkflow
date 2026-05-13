@@ -1,4 +1,4 @@
-# Workflow: Bugfix — V9.3
+# Workflow: Bugfix — V1.0
 
 ## Steps
 1. Read AGENTS.md and relevant skill/module docs.
