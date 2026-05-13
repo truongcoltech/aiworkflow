@@ -44,7 +44,7 @@ Human writes requirement
 
 | Actor | Does | Reads |
 | --- | --- | --- |
-| Claude | Triage → planning, task generation (STANDARD/EPIC), execution plan | AGENTS.md + CUTOFF.md + skills/ + standards/ |
+| Claude | Triage → planning, task generation (STANDARD/EPIC), execution plan | `.ai/AGENTS.md` + CUTOFF.md + skills/ + standards/ |
 | Executor | Code edits — tool(s) listed in `{{AI_TOOLS}}` | Task file + CONTEXT files only |
 | Shell runner | Shell tasks — Cline or terminal | Same task file, no edits needed |
 | Haiku | Optional batch validate (pre-PR) | Diff + task + skills/ |
@@ -80,7 +80,7 @@ Human writes requirement
 
 | File/folder | On adopt |
 | --- | --- |
-| `AGENTS.md` | Merge — keep project constraints |
+| `.ai/AGENTS.md` | Source of truth — merge filled values, keep project constraints |
 | `.ai/workflows/*.md` | Replace |
 | `.ai/routing.md` | Replace |
 | `.ai/SKILLS-TODO.md` | Generate fresh |

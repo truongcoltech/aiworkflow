@@ -126,7 +126,7 @@ Types: `feat` | `fix` | `refactor` | `test` | `docs` | `chore`
 
 ## When Claude hits a ❓ in SKILLS-TODO.md
 
-Claude stops, asks once, fills the row, updates AGENTS.md, continues.
+Claude stops, asks once, fills the row, updates `.ai/AGENTS.md`, continues.
 
 ---
 

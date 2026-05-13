@@ -3,6 +3,7 @@
 ## Trigger
 
 Run this workflow when:
+
 - Human says `"run repo-scan"` or `"scan repo"`
 - Setup wizard completes with `{{PROJECT_TYPE}} = existing`
 - A new developer adopts this workflow on an existing codebase
@@ -11,7 +12,7 @@ Run this workflow when:
 
 ## Purpose
 
-Populate all `[fill after repo-scan]` placeholders in `AGENTS.md` and `SKILLS-TODO.md`
+Populate all `[fill after repo-scan]` placeholders in `.ai/AGENTS.md` and `SKILLS-TODO.md`
 without reading the entire codebase. Targeted detection only.
 
 ---
@@ -46,7 +47,7 @@ Mark each found row `✅`. Mark each not found `❓` with a note of what to ask.
 
 ---
 
-## Step 2 — detect auth pattern (fills AGENTS.md Authentication section)
+## Step 2 — detect auth pattern (fills .ai/AGENTS.md Authentication section)
 
 ```text
 1. Grep for: middleware, auth, jwt, session, cookie, bearer, token, passport, nextauth, clerk, supabase
@@ -62,7 +63,7 @@ Mark each found row `✅`. Mark each not found `❓` with a note of what to ask.
 
 ---
 
-## Step 3 — detect error handling pattern (fills AGENTS.md Error handling section)
+## Step 3 — detect error handling pattern (fills .ai/AGENTS.md Error handling section)
 
 ```text
 1. Grep for: catch, error, throw, HttpException, APIError, logger, log.error
@@ -77,7 +78,7 @@ Mark each found row `✅`. Mark each not found `❓` with a note of what to ask.
 
 ---
 
-## Step 4 — detect test setup (fills AGENTS.md Testing section + build commands)
+## Step 4 — detect test setup (fills .ai/AGENTS.md Testing section + build commands)
 
 ```text
 1. Read package.json scripts (or equivalent in detected build tool)
@@ -119,7 +120,7 @@ Mark each found row `✅`. Mark each not found `❓` with a note of what to ask.
 Before merging any workflow files, check:
 
 ```text
-1. Does AGENTS.md already exist?
+1. Does .ai/AGENTS.md already exist?
    → If yes: diff new template against existing — list conflicts in report
 2. Do .ai/workflows/*.md files already exist?
    → If yes: note which will be replaced (per routing.md merge strategy)
@@ -139,7 +140,7 @@ Apply per `routing.md` merge strategy:
 
 | File/folder | Action |
 | --- | --- |
-| `AGENTS.md` | Merge filled values into template — keep existing project constraints |
+| `.ai/AGENTS.md` | Merge filled values into template — keep existing project constraints |
 | `.ai/workflows/*.md` | Replace with new versions |
 | `.ai/routing.md` | Replace |
 | `.ai/SKILLS-TODO.md` | Generate fresh from Step 1 results |
@@ -168,7 +169,7 @@ After completing all steps, output:
 ❓ <role>: <what was ambiguous and why>
 ...
 
-### AGENTS.md filled
+### .ai/AGENTS.md filled
 ✅ Auth pattern: <summary>
 ✅ Error handling: <summary>
 ✅ Build commands: <list>

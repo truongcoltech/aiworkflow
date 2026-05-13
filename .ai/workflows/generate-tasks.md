@@ -37,12 +37,12 @@ Force upgrade to STANDARD regardless of above classification when touching:
 
 | Level | Load these files | Approx tokens |
 | --- | --- | --- |
-| TRIVIAL | AGENTS.md golden rules + grep target file | ~1k |
-| SIMPLE | AGENTS.md + `.ai/skills/<module>.md` | ~2–3k |
-| STANDARD | AGENTS.md + CUTOFF.md + skills/ + ARCHITECTURE.md (if new resource) | ~5–8k |
+| TRIVIAL | .ai/AGENTS.md golden rules + grep target file | ~1k |
+| SIMPLE | .ai/AGENTS.md + `.ai/skills/<module>.md` | ~2–3k |
+| STANDARD | .ai/AGENTS.md + CUTOFF.md + skills/ + ARCHITECTURE.md (if new resource) | ~5–8k |
 | EPIC | Full read order + memory context | ~10–15k |
 
-**Standards:** all levels — load applicable standards per AGENTS.md standards section before implementation. Standards tokens are in addition to the budget above.
+**Standards:** all levels — load applicable standards per .ai/AGENTS.md standards section before implementation. Standards tokens are in addition to the budget above.
 
 ---
 
@@ -53,18 +53,18 @@ Convert a requirement into task files + execution plan.
 
 ## Context read order (STANDARD and EPIC only)
 
-1. `AGENTS.md`
+1. `.ai/AGENTS.md`
 2. `docs/CUTOFF.md`
 3. `.ai/SKILLS-TODO.md` — check for ❓ rows before starting
 4. `.ai/skills/{module}.md` — if exists (skip source scan)
 5. `docs/modules/{module}/` — only if in CUTOFF.md AND no skill file
 6. `docs/ARCHITECTURE.md` — only if task involves new resource/endpoint/module
 
-**TRIVIAL:** Load AGENTS.md golden rules + grep target file only.
-**SIMPLE:** Load AGENTS.md + relevant `.ai/skills/{module}.md` only. Skip steps 2–6.
+**TRIVIAL:** Load .ai/AGENTS.md golden rules + grep target file only.
+**SIMPLE:** Load .ai/AGENTS.md + relevant `.ai/skills/{module}.md` only. Skip steps 2–6.
 
 **If SKILLS-TODO.md has ❓ rows needed for this task:**
-Stop. Ask human. Fill the row. Update AGENTS.md. Then continue.
+Stop. Ask human. Fill the row. Update .ai/AGENTS.md. Then continue.
 
 ---
 
@@ -87,7 +87,7 @@ Every checklist step must appear in STEPS or be marked `N/A — <reason>`.
 Do NOT write executor in task files. Human decides at run time.
 Claude outputs an execution plan — human uses it to decide what to run where.
 
-Executor = tool(s) listed in `{{AI_TOOLS}}` in AGENTS.md.
+Executor = tool(s) listed in `{{AI_TOOLS}}` in .ai/AGENTS.md.
 Shell runner = Cline or terminal — for shell-only steps.
 
 ## tasks/ naming convention
@@ -250,7 +250,7 @@ Example: branch `feat/PROJ-42-auth` + feature `token-refresh` → `memory/feat-P
 
 This ensures no two developers on different branches collide on the same memory file.
 
-**Expiry:** use `{{MEMORY_EXPIRY_DAYS}}` from `AGENTS.md` Team config (set by setup wizard). Default 14 if unset.
+**Expiry:** use `{{MEMORY_EXPIRY_DAYS}}` from `.ai/AGENTS.md` Team config (set by setup wizard). Default 14 if unset.
 
 **On expiry (mandatory before delete):**
 

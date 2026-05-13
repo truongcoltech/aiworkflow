@@ -1,98 +1,39 @@
-# .claude/CLAUDE.md — Claude Bootstrap V1.0
+# .claude/CLAUDE.md — Claude Code Bootstrap
 
-## Mandatory
-Read `AGENTS.md` (repo root)/src first and follow it strictly.
-This file contains Claude-specific behavior only — it does not override AGENTS.md.
-
----
-
-## Role (always, every project)
-Claude is the **system architect and task breakdown specialist**.
-
-- Design system architecture and module boundaries
-- Decompose requirements into precise executable task files
-- Generate execution plans (what to paste where, in what order)
-- Maintain architecture docs and decision log
-
-Claude is NOT an executor. Code changes go to Codex or Cline.
+> **Source of truth: `.ai/AGENTS.md`** — read it first and follow it strictly.
+> This file contains Claude Code–specific triggers only. It does not add or override rules.
 
 ---
 
-## On first run (new or existing project)
+## On every session start
 
-Ask exactly one question:
-> "Is this a new project or an existing one?"
-
-**New project:**
-- Generate skeletons from `.ai/` templates
-- `SKILLS-TODO.md` starts all ❓
-- Fill stack info progressively during work
-
-**Existing project:**
-- Run `.ai/workflows/repo-scan.md`
-- Pre-flight conflict check → output report → wait for human confirmation
-- Merge/replace per strategy → fill `SKILLS-TODO.md` from scan
-- Begin work
+1. Read `.ai/AGENTS.md` — it is the single source of truth for all rules.
+2. Do not read root `AGENTS.md` — it is a pointer, not a rules file.
 
 ---
 
-## Before every task (mandatory read order)
+## Setup trigger
 
-1. `AGENTS.md` (repo root)/src
-2. `docs/CUTOFF.md`
-3. `.ai/SKILLS-TODO.md` — if task needs a ❓ row: ask human once, fill it, update `AGENTS.md`
-4. `.ai/skills/<module>.md` — if exists (skip source scan)
-5. `docs/modules/<module>/*` — only if in CUTOFF.md AND no skill file
-6. `.ai/memory/<slug>-context.md` — only if resuming multi-session
+When human says any of:
+`"setup ai workflow"` · `"setup workflow"` · `"init workflow"` · `"initialize workflow"`
+
+→ Run `.ai/workflows/setup.md` — do not improvise a setup flow.
 
 ---
 
-## Task generation
+## Merge trigger (on setup, if existing files found)
 
-For any feature, bugfix, or refactor:
+If root `AGENTS.md` contains project-specific rules (auth pattern, constraints, build commands)
+beyond the pointer text → extract and merge into `.ai/AGENTS.md` project-specific sections.
 
-1. Check `.ai/tasks/` — update existing task if found, do not duplicate
-2. Apply pattern matching — check `docs/ARCHITECTURE.md` runbook section
-3. Generate task files using `.ai/workflows/generate-tasks.md`
-4. Return **file paths only** — never dump task content in chat
-5. Output **execution plan** — Codex groups first, Cline last
-6. Output **batch commit message** covering all tasks
+If `.claude/CLAUDE.md` contains project-specific rules beyond this bootstrap text
+→ extract and merge into `.ai/AGENTS.md` project-specific sections.
 
-Respond directly (no task files) for:
-- Architecture questions or explanations
-- Trivial one-liner with no side effects
-- No code or system change required
+After merge: overwrite both files with their pointer/bootstrap forms.
 
 ---
 
-## skills/ maintenance
+## Repo scan trigger
 
-After any task that changes a module's public interface:
-- Check if `.ai/skills/<module>.md` exists
-- If yes: add update to DOC UPDATE section of the task
-- If no: suggest creating a stub after the task is done
-
-Skill files stay under 150 lines. Interface summary only — not a replacement for ARCHITECTURE.md.
-
----
-
-## SKILLS-TODO.md discipline
-
-When a ❓ row is encountered mid-task:
-1. Stop
-2. Ask human once: "What is `<role>` for this project?"
-3. Human answers → fill row → mark ✅
-4. Update `AGENTS.md` relevant section
-5. Continue task
-
-Never guess a ❓ value. Never ask more than one question at a time.
-
----
-
-## Token discipline
-
-- CUTOFF.md before any module docs — it defines what exists
-- skills/<module>.md before ARCHITECTURE.md — faster, sufficient for most tasks
-- ARCHITECTURE.md only when cross-module context is explicitly needed
-- Never load full repo — entry points + grep only
-- One report per session — no intermediate dumps
+When human says `"run repo-scan"` or `"scan repo"`:
+→ Run `.ai/workflows/repo-scan.md`

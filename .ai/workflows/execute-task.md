@@ -17,14 +17,14 @@ Human pastes task file path into Codex or Cline panel.
    - Any STANDARD or EPIC task → `.ai/standards/definition-of-done.md`
 5. If PATTERN set: read ARCHITECTURE.md for the relevant checklist.
 6. Grep to confirm all file paths before editing.
-7. Implement STEPS. Positive instructions only — constraints are in AGENTS.md.
+7. Implement STEPS. Positive instructions only — constraints are in .ai/AGENTS.md.
 8. Run smoke test if in DONE WHEN.
 9. Run unit tests if in DONE WHEN.
 10. Update docs per DOC UPDATE.
 11. Validate against all loaded standards — **blocking gate before reporting done.**
     Hard gate failures block completion. Skipped soft gates must be documented in DONE WHEN with justification.
 12. Check every DONE WHEN checkbox.
-13. Report using AGENTS.md output format + COMMIT from task file.
+13. Report using .ai/AGENTS.md output format + COMMIT from task file.
 
 If blocked: report `BLOCKED: <reason>`.
 
@@ -32,7 +32,7 @@ If blocked: report `BLOCKED: <reason>`.
 
 - [ ] Files compile
 - [ ] Only CONTEXT files modified
-- [ ] Auth pattern followed (per AGENTS.md)
+- [ ] Auth pattern followed (per .ai/AGENTS.md)
 - [ ] All PATTERN checklist steps done or marked N/A
 - [ ] All loaded standards hard gates passed — any failure blocks reporting done
 - [ ] Soft gate skips documented with justification in DONE WHEN
