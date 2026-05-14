@@ -1,255 +1,170 @@
 # AI Workflow — V1.0
 
-A generic, project-agnostic AI-assisted development workflow. Covers triage, task generation, execution, standards enforcement, and doc discipline. Works with any language or stack.
+A generic, project-agnostic AI-assisted development workflow. Covers role detection, triage, task generation, execution, standards enforcement, and doc discipline. Works with any language, stack, or team size.
 
 ---
 
 ## How to adopt
 
-Two paths — pick one based on whether a codebase already exists.
+Two paths — pick one.
 
-| Situation | Use |
-|---|---|
-| Starting a new project from scratch | [New project template](#new-project-template) |
-| Adding the workflow to an existing codebase | [Existing project template](#existing-project-template) |
+| Situation | Do this |
+| --- | --- |
+| New project (empty repo) | Copy `.ai/` folder into repo root → say `"setup ai workflow"` |
+| Existing codebase | Copy `.ai/` folder into repo root → say `"setup ai workflow"` → then `"run repo-scan"` |
 
-Copy the relevant template below, fill in your values, and paste the whole thing into Claude chat.
+That's it. Claude runs an interactive setup interview — no templates to paste.
 
 ---
 
-## New project template
+## What the setup interview asks
 
-Copy this block, fill in every field, paste into Claude chat.
+Claude asks one question at a time. Have these ready before starting:
+
+| # | Question | Notes |
+| --- | --- | --- |
+| Q1 | New or existing project? | Determines whether repo-scan runs after setup |
+| Q2 | Project name | Lowercase kebab-case — used in task file slugs and commit scopes |
+| Q3 | Team size | `solo` / `small` / `medium` / `large` — drives tasks/ naming and memory expiry |
+| Q4 | Primary language + framework | e.g. `TypeScript + Next.js`, `Python + FastAPI` |
+| Q5 | Git platform | `GitHub` / `GitLab` / `Azure DevOps` / other — skipped if solo |
+| Q6 | Git workflow | `PR-based` / `trunk-based` / `git-flow` |
+| Q7 | AI tools in use | `Claude Code` / `Cursor` / `Codex` / `Cline` / other |
+| Q8 | Model cost preference | `cost-first` / `balanced` (default) / `quality-first` |
+| Q9 | Ticket format | e.g. `PROJ-123` / `#123` / `none` — skipped if solo |
+| Q10 | Workflow owner | `tech-lead` / `team` — skipped if solo |
+| Q11 | QA mode (optional) | `task` / `epic-only` / `off` (default) — generates `.qa.md` docs for testers |
+
+---
+
+## What gets generated
+
+After the interview, Claude writes these files automatically:
+
+| File | What it contains |
+| --- | --- |
+| `.ai/AGENTS.md` | **Source of truth** — all rules, team config, model routing, branch conventions |
+| `.ai/exec-context.md` | Auto-generated executor context — thin subset for Codex/Cursor/Cline |
+| `.ai/routing.md` | Role detection flow, context-by-role map, model routing table |
+| `.ai/SKILLS-TODO.md` | Tech stack registry — language + framework pre-filled, rest as ❓ |
+| `docs/ARCHITECTURE.md` | Header filled — rest populated progressively during work |
+| `AGENTS.md` (root) | Thin pointer → `.ai/AGENTS.md` |
+| `.claude/CLAUDE.md` | Bootstrap pointer + setup/repo-scan triggers |
+
+**Filled later by repo-scan or first work session:**
+
+- Auth pattern, error handling, testing pattern, project constraints
+- Build / lint / test / typecheck commands
+- Module skill files (`.ai/skills/`)
+- Module map (`.ai/module-map.md`)
+
+---
+
+## Role system
+
+Claude detects its role from the message before loading any context.
+
+| Role | Triggered by | Context loaded | Output |
+| --- | --- | --- | --- |
+| **Architect** | `design`, `plan`, `break down`, `analyze`, `brainstorm`, `review and propose` | Full `.ai/AGENTS.md` | Task files + execution plan |
+| **Executor** | `implement`, `fix`, `build`, `create`, `refactor`, `update X` | `exec-context.md` only (~75% fewer tokens) | Code changes + DONE WHEN |
+
+Claude also acts as executor when the message is execution-intent — it loads `exec-context.md` instead of `AGENTS.md`. External tools (Codex, Cursor, Cline) always run as executor.
+
+Ambiguous message → defaults to **Architect**. Claude never switches role mid-task silently — stops and asks if unclear.
+
+---
+
+## Daily workflow
 
 ```text
-Setup AI workflow for new project.
+Write requirement
+  → Claude detects role (architect or executor)
 
-───────────────────────────────────────────────────
- STACK
-───────────────────────────────────────────────────
+  ARCHITECT:
+    → Triage (TRIVIAL / SIMPLE / STANDARD / EPIC)
+    → TRIVIAL: Claude implements directly
+    → SIMPLE:  2-section task note → send to executor tool
+    → STANDARD/EPIC: task files + execution plan → send to executor tool
 
-Project name: MyApp
-  # Your project name — used in doc titles and commit scope
+  EXECUTOR (Codex / Cursor / Cline):
+    → Reads exec-context.md + task file + applicable standards
+    → Implements STEPS
+    → Validates DONE WHEN + standards gates
+    → Updates .qa.md if QA mode is on
+    → Reports done
 
-Language: TypeScript
-  # Options: TypeScript / JavaScript / Python / Go / C# / Java / PHP / Ruby / Rust
-
-Runtime / framework: Express.js
-  # Options: Express.js / Fastify / NestJS / FastAPI / Django / Flask / Rails / Spring Boot / Laravel / None
-
-Frontend framework: Next.js 14
-  # Options: Next.js / React / Vue / Svelte / Angular / None
-
-CSS approach: Tailwind
-  # Options: Tailwind / CSS Modules / Styled Components / SCSS / None
-
-Database: PostgreSQL
-  # Options: PostgreSQL / MySQL / SQLite / MongoDB / DynamoDB / Redis / None
-
-ORM / query builder: Prisma
-  # Options: Prisma / TypeORM / Knex / Drizzle / Sequelize / SQLAlchemy / GORM / ActiveRecord / None
-
-Package manager: npm
-  # Options: npm / pnpm / yarn / pip + venv / cargo / go mod / composer / bundler
-
-Build tool: tsc + Vite
-  # Options: tsc / Vite / Webpack / esbuild / Turbopack / Parcel / Rollup / None
-
-Test framework: Jest + Supertest
-  # Options: Jest / Vitest / Mocha / pytest / go test / NUnit / RSpec / PHPUnit
-
-Auth pattern: JWT Bearer token
-  # Options: JWT Bearer / Session cookie / API key in header / OAuth 2.0 / SAML / None
-
-Deployment target: Railway
-  # Options: Vercel / Railway / Fly.io / Heroku / Render / AWS ECS / Docker + Kubernetes / VPS
-
-───────────────────────────────────────────────────
- BUILD COMMANDS  (replace with your actual commands)
-───────────────────────────────────────────────────
-
-Build:       npm run build
-  # Command to compile or bundle the project
-
-Type check:  tsc --noEmit
-  # Command for type checking only (no output). e.g. mypy src/ / go vet ./...
-
-Test:        npm test
-  # Command to run all tests. e.g. pytest / go test ./... / dotnet test
-
-Lint:        npm run lint
-  # Command to run linter. e.g. flake8 / golangci-lint run / rubocop
-
-Dev server:  npm run dev
-  # Command to start local development server. e.g. uvicorn main:app --reload
-
-───────────────────────────────────────────────────
- AUTH AND ROLE MODEL  (manual — describe your scheme)
-───────────────────────────────────────────────────
-
-JWT Bearer token verified in Express middleware (not inside route handlers).
-Roles: admin, editor, viewer.
-All DB queries filter by tenantId from the authenticated session token.
-Role checks are explicit per endpoint — "authenticated" does not imply "authorized."
-
-  # Replace the above with your actual auth scheme and role model.
-  # Examples:
-  #   Session-based: "Session cookie set on login, userId in session. No roles — single-user app."
-  #   API key:       "X-API-Key header verified in middleware. Keys scoped to a workspace."
-  #   OAuth:         "Google OAuth 2.0 via NextAuth. Roles stored in DB: owner / member."
-
-───────────────────────────────────────────────────
- ERROR HANDLING CONVENTIONS  (manual — describe per context)
-───────────────────────────────────────────────────
-
-API:             Return { error, message, statusCode }. Log full stack server-side. Never expose trace to client.
-Background jobs: Log { jobId, error, stack } on every failure. Never swallow errors.
-UI:              Show full error details in dev mode. User-friendly message only in production.
-
-  # Replace with your actual conventions.
-  # Examples:
-  #   "API errors use RFC 7807 Problem Details format."
-  #   "Worker failures are written to a dead-letter queue, not just logged."
-  #   "UI uses a global error boundary + toast notification."
-
-───────────────────────────────────────────────────
- PROJECT-SPECIFIC CONSTRAINTS  (manual — rules agents must follow)
-───────────────────────────────────────────────────
-
-- All DB queries touching user data must filter by tenantId.
-- No business logic in route handlers — service layer only.
-- Never overwrite versioned records without creating a snapshot first.
-
-  # Replace with rules specific to your codebase.
-  # These become golden rules agents must follow during every task.
-  # Examples:
-  #   "All writes must go through the domain service, not the repo directly."
-  #   "Do not add npm packages without noting them in the task COMMIT block."
-  #   "All public API responses must match the OpenAPI spec."
-  # Leave blank if none yet — add during work as rules are discovered.
+  Human:
+    → Reviews diff
+    → Commits using batch commit message
+    → Pushes
 ```
 
 ---
 
-## Existing project template
+## QA docs (when QA mode is active)
 
-For existing codebases, Claude auto-detects the stack via repo-scan. You only need to fill in the parts Claude cannot infer from code.
+For STANDARD and EPIC tasks, Claude generates a paired `.qa.md` alongside each task file.
 
 ```text
-Setup AI workflow for existing project.
-
-───────────────────────────────────────────────────
- PROJECT NAME  (manual)
-───────────────────────────────────────────────────
-
-Project name: MyApp
-  # Your project name
-
-───────────────────────────────────────────────────
- AUTH AND ROLE MODEL  (manual — cannot be detected from code)
-───────────────────────────────────────────────────
-
-JWT Bearer token verified in Express middleware.
-Roles: admin, editor, viewer.
-All DB queries filter by tenantId from the session token.
-
-  # Replace with your actual scheme. See new project template for examples.
-
-───────────────────────────────────────────────────
- ERROR HANDLING CONVENTIONS  (manual)
-───────────────────────────────────────────────────
-
-API:             Return { error, message, statusCode }. Log full stack server-side.
-Background jobs: Log { jobId, error, stack } on failure. Never swallow.
-UI:              Full details in dev mode, friendly message in production.
-
-  # Replace with your conventions. See new project template for examples.
-
-───────────────────────────────────────────────────
- PROJECT-SPECIFIC CONSTRAINTS  (manual)
-───────────────────────────────────────────────────
-
-- All DB queries must filter by tenantId.
-- No business logic in route handlers — service layer only.
-
-  # Replace with your rules, or leave blank and add during work.
-
-───────────────────────────────────────────────────
- NOTE
-───────────────────────────────────────────────────
-
-Stack, framework, build commands, package manager, test runner, and
-module structure will be auto-detected from the repo. After setup,
-review SKILLS-TODO.md and correct any rows Claude got wrong.
+.ai/tasks/feat-auth/001-add-login.md        ← task (for executor)
+.ai/tasks/feat-auth/001-add-login.qa.md     ← QA impact doc (for tester)
 ```
 
----
+Each `.qa.md` contains: affected features, regression risk (low/medium/high), test scenarios, regression checks, and what testers can safely skip.
 
-## What Claude does with these templates
-
-| Field | What Claude does |
-|---|---|
-| Project name | Fills `AGENTS.md` header, doc titles (ARCHITECTURE.md, CUTOFF.md, etc.) |
-| Stack fields | Fills `SKILLS-TODO.md` rows, `AGENTS.md` stack line, `ARCHITECTURE.md` stack section |
-| Build commands | Fills `AGENTS.md` build commands table |
-| Auth and role model | Fills `AGENTS.md` Authentication section |
-| Error handling conventions | Fills `AGENTS.md` Error handling section |
-| Project-specific constraints | Fills `AGENTS.md` Project-specific constraints section |
-| *(existing project only)* repo-scan | Auto-fills SKILLS-TODO.md, detects module structure, fills CUTOFF.md |
+When an EPIC closes, a summary is generated at `docs/qa/{epic-slug}.qa.md` consolidating all impacted features in recommended test order.
 
 ---
 
-## Placeholder reference
+## Repository structure
 
-Fields that require ongoing attention during development (not just setup).
-
-### AGENTS.md — fill during work
-
-| Placeholder | When to fill |
-|---|---|
-| `<TESTING_PATTERN>` | After first test is written — add project test commands and rules not already in `testing-policy.md` |
-| `<PROJECT_CONSTRAINTS>` | Add rules as they are discovered during work. One rule per line. |
-| Build commands (if repo-scanned wrong) | Correct after setup if auto-detection was inaccurate |
-
-### docs/ARCHITECTURE.md — fill progressively
-
-| Section | When to fill |
-|---|---|
-| App/service names and purposes | During first EPIC or system overview session |
-| Key flows | Add one flow each time a major flow is built |
-| Runbook patterns | Add the first time a pattern is used (new endpoint, new resource, etc.) |
-
-### docs/CUTOFF.md — update after each EPIC
-
-Add a row to the documented modules table each time a module gets a skill file or full docs.
-
-### docs/DECISIONS.md — fill when a non-obvious rule is added
-
-One `DECISION-NNN` block per constraint added to `AGENTS.md` that is not self-explanatory.
-
-### docs/CHANGELOG.md — fill after each completed EPIC
-
-One entry per EPIC. Delete the corresponding memory file from `.ai/memory/` after logging.
-
-### .ai/module-map.md — fill during repo-scan or first work session
-
-Add one mapping per module: `<human phrase> -> <kebab-case-module-name>`
-
-### .ai/standards/ — fill stack-specific sections after repo-scan
-
-| File | What to fill |
-|---|---|
-| `code-conventions.md` | Naming conventions per language, ORM rules, framework-specific anti-patterns |
-| `security.md` | Your project's ownership/scoping key (e.g. `tenantId`), sensitive field encryption requirements |
-| `testing-policy.md` | Project-specific rows in the test matrix, test runner commands |
+```text
+AGENTS.md                    ← thin pointer to .ai/AGENTS.md (do not add rules here)
+README.md                    ← this file
+.claude/
+  CLAUDE.md                  ← Claude Code bootstrap (setup trigger, pointer to .ai/AGENTS.md)
+.ai/
+  AGENTS.md                  ← SOURCE OF TRUTH — all rules, config, conventions
+  exec-context.md            ← auto-generated executor context (Codex/Cursor/Cline)
+  SKILLS-TODO.md             ← tech stack registry (❓ rows filled during work)
+  module-map.md              ← phrase → module name mappings
+  routing.md                 ← role detection, context-by-role, model routing
+  workflows/
+    setup.md                 ← setup interview (runs on "setup ai workflow")
+    repo-scan.md             ← existing project scan (runs on "run repo-scan")
+    generate-tasks.md        ← architect: triage, task formats, QA file formats
+    execute-task.md          ← executor: implementation steps, DONE WHEN gates
+    feature.md               ← feature workflow
+    bugfix.md                ← bugfix workflow
+  standards/
+    code-conventions.md      ← naming, structure, error handling, logging
+    security.md              ← auth, secrets, tenant isolation, audit logging
+    testing-policy.md        ← test type matrix, unit/integration rules
+    ui-visual-testing.md     ← component, page, accessibility checks
+    definition-of-done.md    ← hard gates, per-change-type checklists
+  skills/                    ← module interface summaries (created during work)
+  tasks/                     ← execution task files (created during work)
+  memory/                    ← multi-session EPIC context snapshots
+docs/
+  ARCHITECTURE.md            ← system architecture (filled progressively)
+  CUTOFF.md                  ← module registry — documented vs code-only
+  DECISIONS.md               ← architecture decisions and rationale
+  CHANGELOG.md               ← completed EPICs log
+  LESSONS.md                 ← dangerous patterns discovered from bugs
+  qa/                        ← EPIC QA summaries (created when EPICs close)
+```
 
 ---
 
 ## File merge strategy (existing projects)
 
 | File / folder | On adopt |
-|---|---|
-| `AGENTS.md` | Merge — keep existing project constraints |
+| --- | --- |
+| `.ai/AGENTS.md` | Source of truth — merge existing project constraints, keep filled values |
+| `.ai/exec-context.md` | Regenerate from filled `.ai/AGENTS.md` after merge |
+| `AGENTS.md` (root) | Overwrite with thin pointer after extracting any project-specific rules |
+| `.claude/CLAUDE.md` | Overwrite with bootstrap form after extracting any project-specific rules |
 | `.ai/workflows/*.md` | Replace |
 | `.ai/routing.md` | Replace |
 | `.ai/SKILLS-TODO.md` | Generate fresh from repo-scan |
@@ -261,62 +176,65 @@ Add one mapping per module: `<human phrase> -> <kebab-case-module-name>`
 
 ---
 
-## Repository structure
+## Ongoing maintenance
 
-```text
-AGENTS.md                   ← rules for all AI agents (filled per project)
-README.md                   ← this file — setup guide and templates
-.ai/
-  SKILLS-TODO.md            ← tech stack registry (❓ rows filled during work)
-  module-map.md             ← phrase → module name mappings
-  routing.md                ← flow, roles, executor guide
-  workflows/
-    generate-tasks.md       ← how Claude generates task files
-    execute-task.md         ← how Codex/Cline executes a task
-    feature.md              ← feature workflow steps
-    bugfix.md               ← bugfix workflow steps
-  standards/
-    code-conventions.md     ← naming, structure, error handling, logging
-    security.md             ← isolation, auth, secrets, audit logging
-    testing-policy.md       ← test type matrix, unit/integration/migration rules
-    ui-visual-testing.md    ← component, page, a11y checks
-    definition-of-done.md   ← hard gates, per-change-type checklists, quality thresholds
-  skills/                   ← module interface summaries (created during work)
-  tasks/                    ← execution task files (created during work)
-  memory/                   ← multi-session context snapshots (created for EPICs)
-docs/
-  ARCHITECTURE.md           ← system architecture (filled progressively)
-  CUTOFF.md                 ← module registry — what is documented vs not
-  DECISIONS.md              ← key architecture decisions and rationale
-  CHANGELOG.md              ← completed EPICs log
-```
+### `.ai/AGENTS.md` — fill during work
 
----
+| Section | When to fill |
+| --- | --- |
+| `{{PROJECT_CONSTRAINTS}}` | Add rules as discovered — one rule per line |
+| `{{TESTING_PATTERN}}` | After first test — project-specific commands and rules |
+| `{{AUTH_PATTERN}}` and sub-fields | During repo-scan or first auth-touching task |
+| `{{ERROR_HANDLING_PATTERN}}` | During repo-scan |
+| Build commands | During repo-scan or correct after setup if auto-detection was wrong |
 
-## Daily workflow
+### `docs/ARCHITECTURE.md` — fill progressively
 
-```text
-1. Write requirement
-   → Claude triages (TRIVIAL / SIMPLE / STANDARD / EPIC)
+| Section | When |
+| --- | --- |
+| Apps/services and purposes | During first EPIC or system overview session |
+| Key flows | Each time a major flow is built |
+| Runbook patterns | First time a pattern is used (new endpoint, new module, etc.) |
 
-2. TRIVIAL: Claude implements directly — no task file
-   SIMPLE:   Claude writes 2-section task note → paste into Codex
-   STANDARD/EPIC: Claude generates task files + execution plan
+### `docs/DECISIONS.md` — one entry per non-obvious constraint
 
-3. Paste Codex group → Codex panel   (code edits)
-   Paste Cline group → Cline terminal (shell tasks, if any)
+Write a `DECISION-NNN` block each time a rule is added to `.ai/AGENTS.md` that needs rationale.
 
-4. Review diff → commit using batch commit message → push
-```
+### `docs/LESSONS.md` — one entry per dangerous pattern found
+
+Two triggers: (1) after bugs that reveal "never again" patterns, (2) when an EPIC memory file expires — extract failure/lesson entries before deleting the memory file.
+
+### `docs/CHANGELOG.md` — one entry per completed EPIC
+
+One line per EPIC. Delete the corresponding `.ai/memory/` file after logging.
+
+### `.ai/memory/` — EPIC context files expire
+
+Expiry days set by team size (solo=60, small=30, medium=21, large=14). Before deleting an expired memory file:
+
+1. Extract `## Decisions` → append to `docs/DECISIONS.md`
+2. Extract lessons → append to `docs/LESSONS.md`
+3. Write one-line summary → `docs/CHANGELOG.md`
+4. Delete the memory file
+
+### `docs/qa/` — EPIC QA summaries (when QA mode is active)
+
+Generated automatically when an EPIC closes. One file per EPIC: `docs/qa/{epic-slug}.qa.md`. Testers use this as the primary reference for what to verify and in what order.
+
+### `.ai/skills/{module}.md` — create on first touch
+
+Written by Claude when a module's interface is first encountered. Max 150 lines. Updated when public interface changes.
 
 ---
 
 ## Key resources
 
 | Resource | Purpose |
-|---|---|
-| [AGENTS.md](AGENTS.md) | Rules, triage, standards map, auth, error handling, build commands |
-| [.ai/routing.md](.ai/routing.md) | Role map, executor guide, triage flow |
+| --- | --- |
+| [.ai/AGENTS.md](.ai/AGENTS.md) | Source of truth — rules, triage, model routing, auth, build commands |
+| [.ai/routing.md](.ai/routing.md) | Role detection, context-by-role map, executor guide |
+| [.ai/exec-context.md](.ai/exec-context.md) | Executor context (Codex/Cursor/Cline read this, not AGENTS.md) |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture, runbook patterns |
 | [docs/CUTOFF.md](docs/CUTOFF.md) | What is documented vs what exists only in code |
 | [.ai/standards/](.ai/standards/) | Code conventions, security, testing, UI, definition of done |
+| [docs/qa/](docs/qa/) | EPIC QA summaries for testers |
