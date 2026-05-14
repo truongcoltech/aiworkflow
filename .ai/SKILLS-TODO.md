@@ -3,6 +3,7 @@
 Auto-filled by repo-scan. Updated by Claude during work when new info is discovered.
 
 ## Rule for Claude
+
 - ❓ = unknown. If a task requires this info: ask human once, then fill here + update relevant skill file.
 - ✅ = confirmed. Use directly.
 - When human answers an ❓: update status to ✅ and fill value immediately.
@@ -12,11 +13,12 @@ Auto-filled by repo-scan. Updated by Claude during work when new info is discove
 ## Stack
 
 Stability levels:
+
 - `core` — stable for the life of the repo. Fill once from repo-scan. Never re-detect.
 - `module` — stable per module. Fill when first touching that module.
 
 | Role | Stability | Status | Value |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Primary language | core | ❓ | — |
 | Runtime / framework | core | ❓ | — |
 | Package manager | core | ❓ | — |
@@ -36,7 +38,7 @@ Stability levels:
 ## Module skill files
 
 | Module | Skill file | Status |
-|---|---|---|
+| --- | --- | --- |
 | _filled during work_ | `.ai/skills/<module>.md` | ❓ |
 
 ---
@@ -44,15 +46,17 @@ Stability levels:
 ## How Claude fills this file
 
 **From repo-scan:**
+
 1. Detect `package.json` / `*.csproj` / `pyproject.toml` / etc. → fill Language + Package manager
 2. Detect framework deps → fill Runtime / framework
 3. Detect test deps → fill Test framework
 4. Detect auth middleware → fill Auth pattern
 
 **During work (when ❓ is encountered):**
+
 1. Stop task
 2. Ask human: "What is `<role>` for this project?"
 3. Human answers
 4. Fill value here → update status to ✅
-5. Update `AGENTS.md` relevant section
+5. Update `.ai/AGENTS.md` relevant section
 6. Continue task

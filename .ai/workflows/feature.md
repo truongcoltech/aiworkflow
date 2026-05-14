@@ -1,4 +1,4 @@
-# Workflow: Feature — V9.3
+# Workflow: Feature — V1.0
 
 ## Steps
 1. Triage first — classify as TRIVIAL / SIMPLE / STANDARD / EPIC per generate-tasks.md TRIAGE section. Apply safety override if needed.

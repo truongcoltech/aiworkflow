@@ -72,4 +72,4 @@ Report done only after:
 1. All applicable hard gates above checked
 2. All DONE WHEN items in task file verified
 3. DOC UPDATE completed per doc trigger matrix in `generate-tasks.md`
-4. Output block in AGENTS.md format produced
+4. Output block in `.ai/AGENTS.md` format produced
